@@ -1,0 +1,1 @@
+enum AnalyticsType { firebase }

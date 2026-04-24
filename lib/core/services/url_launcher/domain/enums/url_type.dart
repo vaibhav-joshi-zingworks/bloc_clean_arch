@@ -1,0 +1,1 @@
+enum UrlType { web, mailto, sms, whatsapp, tel, maps }

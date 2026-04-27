@@ -1,8 +1,10 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core.dart';
 import '../../domain/entities/app_status.dart';
-import '../bloc/splash_cubit.dart';
+import '../bloc/splash_bloc.dart';
+import '../bloc/splash_event.dart';
 import '../bloc/splash_state.dart';
 
 class SplashView extends StatelessWidget {
@@ -11,30 +13,48 @@ class SplashView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => sl<SplashCubit>()..init(),
+      create: (_) => sl<SplashBloc>()..add(const SplashEvent.started()),
       child: AppScaffold(
-        body: BlocListener<SplashCubit, SplashState>(
+        body: BlocListener<SplashBloc, SplashState>(
           listener: (context, state) {
-            final status = state.status;
+            state.whenOrNull(
+              loaded: (status) {
+                switch (status) {
+                  case AppStatus.authenticated:
+                  // TODO: navigate to home
+                    break;
 
-            if (status == null) return;
+                  case AppStatus.unauthenticated:
+                  // TODO: navigate to login
+                    break;
 
-            switch (status) {
-              case AppStatus.authenticated:
-                break;
-
-              case AppStatus.unauthenticated:
-                break;
-
-              case AppStatus.firstLaunch:
-                break;
-            }
+                  case AppStatus.firstLaunch:
+                  // TODO: navigate to onboarding
+                    break;
+                }
+              },
+              error: (message) {
+                // TODO: show error snackbar/dialog
+                debugPrint("Error: $message");
+              },
+            );
           },
-          child: const Center(
-            child: AppTextWidget(
-              text: "Welcome to bloc structure Application",
-              color: Colors.amberAccent,
-            ),
+          child: BlocBuilder<SplashBloc, SplashState>(
+            builder: (context, state) {
+              return state.when(
+                initial: () => const SizedBox(),
+
+                loading: () => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+
+                loaded: (_) => const SizedBox(), // UI handled via navigation
+
+                error: (message) => Center(
+                  child: Text("Error: $message"),
+                ),
+              );
+            },
           ),
         ),
       ),

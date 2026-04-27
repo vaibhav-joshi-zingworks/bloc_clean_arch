@@ -126,10 +126,23 @@ import 'app/view/app.dart';
 import 'core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+void logEnv() {
+  debugPrint('🚀 ===== ENV CONFIG =====');
+  debugPrint('Flavor: ${Env.flavor}');
+  debugPrint('Host: ${Env.host}');
+  debugPrint('Base URL: ${Env.baseUrl}');
+  debugPrint('Image Base URL: ${Env.imageBaseUrl}');
+  debugPrint('Encryption Key: ${Env.appEncryptionKey}');
+  debugPrint('========================');
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await initDependencies();
+
+  // 🔥 Print ENV here
+  logEnv();
 
   Bloc.observer = AppBlocObserver();
 

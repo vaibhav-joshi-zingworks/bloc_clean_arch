@@ -1,21 +1,15 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../domain/entities/app_status.dart';
 
-class SplashState {
-  final bool isLoading;
-  final AppStatus? status;
+part 'splash_state.freezed.dart';
 
-  const SplashState({
-    this.isLoading = false,
-    this.status,
-  });
+@freezed
+class SplashState with _$SplashState {
+  const factory SplashState.initial() = _Initial;
 
-  SplashState copyWith({
-    bool? isLoading,
-    AppStatus? status,
-  }) {
-    return SplashState(
-      isLoading: isLoading ?? this.isLoading,
-      status: status ?? this.status,
-    );
-  }
+  const factory SplashState.loading() = _Loading;
+
+  const factory SplashState.loaded(AppStatus status) = _Loaded;
+
+  const factory SplashState.error(String message) = _Error;
 }

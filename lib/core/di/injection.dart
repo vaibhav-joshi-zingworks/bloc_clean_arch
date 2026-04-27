@@ -8,7 +8,6 @@ import '../../features/splash/data/datasource/splash_local_data_source.dart';
 import '../../features/splash/data/repositories/splash_repository_impl.dart';
 import '../../features/splash/domain/repositories/splash_repository.dart';
 import '../../features/splash/domain/usecases/get_app_status_usecase.dart';
-import '../../features/splash/presentation/bloc/splash_cubit.dart';
 import '../services/encryption/xcore.dart';
 import '/core.dart';
 import 'injection.config.dart';
@@ -20,7 +19,7 @@ final sl = GetIt.instance;
   preferRelativeImports: true,
   asExtension: true,
 )
-Future<void> initDependencies() => sl.init();
+Future<void> initDependencies() async => sl.init();
 
 @module
 abstract class InjectionModule {
@@ -306,7 +305,4 @@ abstract class InjectionModule {
   GetAppStatusUseCase getAppStatusUseCase(SplashRepository repository) =>
       GetAppStatusUseCase(repository);
 
-  @lazySingleton
-  SplashCubit splashCubit(GetAppStatusUseCase useCase) =>
-      SplashCubit(useCase);
 }

@@ -24,7 +24,7 @@ import '../../features/splash/domain/repositories/splash_repository.dart'
     as _i210;
 import '../../features/splash/domain/usecases/get_app_status_usecase.dart'
     as _i1043;
-import '../../features/splash/presentation/bloc/splash_cubit.dart' as _i955;
+import '../../features/splash/presentation/bloc/splash_bloc.dart' as _i442;
 import '../services/analytics/domain/facades/analytics_facade.dart' as _i288;
 import '../services/encryption/xcore.dart' as _i0;
 import '../services/notification/domain/strategies/notification_strategy.dart'
@@ -151,10 +151,10 @@ extension GetItInjectableX on _i174.GetIt {
         injectionModule.loadThemeModeUseCase(gh<_i691.ThemeRepository>()));
     gh.lazySingleton<_i691.SaveThemeModeUseCase>(() =>
         injectionModule.saveThemeModeUseCase(gh<_i691.ThemeRepository>()));
+    gh.factory<_i442.SplashBloc>(
+        () => _i442.SplashBloc(gh<_i1043.GetAppStatusUseCase>()));
     gh.lazySingleton<_i943.NetworkMonitorService>(() => injectionModule
         .networkMonitorService(gh<_i943.NetworkMonitorRepository>()));
-    gh.lazySingleton<_i955.SplashCubit>(
-        () => injectionModule.splashCubit(gh<_i1043.GetAppStatusUseCase>()));
     gh.lazySingleton<_i163.AppInitializerCubit>(() => _i163.AppInitializerCubit(
           analytics: gh<_i288.AnalyticsFacade>(),
           notificationStrategy: gh<_i242.NotificationStrategy>(),

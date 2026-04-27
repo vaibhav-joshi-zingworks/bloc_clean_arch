@@ -18,7 +18,7 @@ class AppInitializerCubit extends Cubit<void> {
     // Run in parallel
     await Future.wait([
       _initNotifications(),
-      _initAnalytics(),
+      // _initAnalytics(),
     ]);
   }
 
@@ -27,7 +27,7 @@ class AppInitializerCubit extends Cubit<void> {
     await notificationStrategy.initialize();
   }
 
-  Future<void> _initAnalytics() async {
-    await analytics.init(isEnabled: true);
-  }
+  // Future<void> _initAnalytics() async {
+  //   await analytics.init(isEnabled: true);
+  // }
 }

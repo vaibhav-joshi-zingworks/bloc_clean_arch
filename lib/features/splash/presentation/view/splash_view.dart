@@ -15,6 +15,7 @@ class SplashView extends StatelessWidget {
     return BlocProvider(
       create: (_) => sl<SplashBloc>()..add(const SplashEvent.started()),
       child: AppScaffold(
+        //TODO: Implement BlocConsumer
         body: BlocListener<SplashBloc, SplashState>(
           listener: (context, state) {
             state.whenOrNull(

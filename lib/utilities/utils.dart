@@ -2,7 +2,6 @@ import '../core.dart';
 import 'enums/enums.dart';
 
 class Utils {
-
   static Color getColor(MessageType result) {
     switch (result) {
       case MessageType.error:
@@ -18,10 +17,13 @@ class Utils {
     }
   }
 
-  static void snackBar(String message, {String? titleText, MessageType result = MessageType.general, int duration = 2}) {
-    final context = NavigationService.context;
+  static void snackBar(String message,
+      {String? titleText,
+      MessageType result = MessageType.general,
+      int duration = 2}) {
+    final messenger = Global.scaffoldMessengerKey.currentState;
 
-    if (context == null) return;
+    if (messenger == null) return;
 
     IconData iconData;
     Color iconColor = AppColorPalette.white;
@@ -59,15 +61,19 @@ class Utils {
         leading: Icon(iconData, size: 25, color: iconColor),
         title: titleText == null
             // ? AppTextWidget(text: message, fontSize: 12, color: textColor)
-            ? Text(message, style: TextStyle(color: textColor,fontSize: 12))
-              : Text(titleText, style: TextStyle(color: textColor,fontSize: 14,fontWeight: FontWeight.w600)),
-        subtitle: titleText == null ? null : Text(message, style: TextStyle(color: textColor,fontSize: 12)),
+            ? Text(message, style: TextStyle(color: textColor, fontSize: 12))
+            : Text(titleText,
+                style: TextStyle(
+                    color: textColor,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600)),
+        subtitle: titleText == null
+            ? null
+            : Text(message, style: TextStyle(color: textColor, fontSize: 12)),
         dense: true,
         contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 2),
       ),
     );
-
-    final messenger = ScaffoldMessenger.of(context);
 
     messenger
       ..clearSnackBars()

@@ -1,4 +1,5 @@
 import '/core.dart';
+import 'package:go_router/go_router.dart';
 import '../../../analytics/xcore.dart';
 
 class AwesomeNotificationEventHandler {
@@ -30,8 +31,7 @@ class AwesomeNotificationEventHandler {
 
     // Default navigation
     if (payload != null && payload.containsKey("route")) {
-      final context = NavigationService.context;
-      if (context != null) context.go(payload["route"]!);
+      sl<GoRouter>().go(payload["route"]!);
     }
   }
 }

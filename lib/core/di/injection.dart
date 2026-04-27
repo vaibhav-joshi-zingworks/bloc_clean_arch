@@ -1,3 +1,14 @@
+import 'package:go_router/go_router.dart';
+
+import '../../app/providers/locale_cubit.dart';
+import '../../app/router/app_router.dart';
+import '../../app/xcore.dart';
+import '../../features/settings/xcore.dart';
+import '../../features/splash/data/datasource/splash_local_data_source.dart';
+import '../../features/splash/data/repositories/splash_repository_impl.dart';
+import '../../features/splash/domain/repositories/splash_repository.dart';
+import '../../features/splash/domain/usecases/get_app_status_usecase.dart';
+import '../../features/splash/presentation/bloc/splash_cubit.dart';
 import '../services/encryption/xcore.dart';
 import '/core.dart';
 import 'injection.config.dart';
@@ -23,12 +34,12 @@ abstract class InjectionModule {
   @lazySingleton
   Connectivity get connectivity => Connectivity();
 
-  @lazySingleton
-  AnalyticsFactory analyticsFactory() => DefaultAnalyticsFactory();
+  // @lazySingleton
+  // AnalyticsFactory analyticsFactory() => DefaultAnalyticsFactory();
 
-  @lazySingleton
-  AnalyticsFacade analyticsFacade(AnalyticsFactory factory) =>
-      AnalyticsFacadeImpl(factory.create(AnalyticsType.firebase));
+  // @lazySingleton
+  // AnalyticsFacade analyticsFacade(AnalyticsFactory factory) =>
+  //     AnalyticsFacadeImpl(factory.create(AnalyticsType.firebase));
 
   @lazySingleton
   StorageStrategy storageStrategy(FlutterSecureStorage secureStorage) =>
@@ -236,4 +247,66 @@ abstract class InjectionModule {
 
   @lazySingleton
   AppLifecycleService appLifecycleService() => AppLifecycleService();
+
+  @singleton
+  GlobalMessageCubit globalMessageCubit() => GlobalMessageCubit();
+
+  @singleton
+  LocaleCubit localeCubit() => LocaleCubit();
+  //
+  // @lazySingleton
+  // GoRouter router(AnalyticsFacade analyticsFacade) {
+  //   return AppRouter.createRouter(
+  //     observers: [
+  //       if (analyticsFacade.observer != null)
+  //         analyticsFacade.observer!,
+  //     ],
+  //   );
+  // }
+
+  @lazySingleton
+  GoRouter router() {
+    return AppRouter.createRouter(
+      observers: [],
+    );
+  }
+
+  @lazySingleton
+  ThemeLocalDataSource themeLocalDataSource(StorageFacade storage) =>
+      ThemeLocalDataSource(storage);
+
+  @lazySingleton
+  ThemeRepository themeRepository(ThemeLocalDataSource ds) =>
+      ThemeRepositoryImpl(ds);
+
+  @lazySingleton
+  LoadThemeModeUseCase loadThemeModeUseCase(ThemeRepository repository) =>
+      LoadThemeModeUseCase(repository);
+
+  @lazySingleton
+  SaveThemeModeUseCase saveThemeModeUseCase(ThemeRepository repository) =>
+      SaveThemeModeUseCase(repository);
+
+  @singleton
+  ThemeCubit themeCubit(
+    LoadThemeModeUseCase loadThemeModeUseCase,
+    SaveThemeModeUseCase saveThemeModeUseCase,
+  ) =>
+      ThemeCubit(loadThemeModeUseCase, saveThemeModeUseCase);
+
+  @lazySingleton
+  SplashLocalDataSource splashLocalDataSource(StorageFacade storage) =>
+      SplashLocalDataSource(storage);
+
+  @lazySingleton
+  SplashRepository splashRepository(SplashLocalDataSource local) =>
+      SplashRepositoryImpl(local);
+
+  @lazySingleton
+  GetAppStatusUseCase getAppStatusUseCase(SplashRepository repository) =>
+      GetAppStatusUseCase(repository);
+
+  @lazySingleton
+  SplashCubit splashCubit(GetAppStatusUseCase useCase) =>
+      SplashCubit(useCase);
 }

@@ -86,6 +86,7 @@ export 'package:talker/talker.dart';
 export'package:talker_dio_logger/talker_dio_logger_interceptor.dart';
 export'package:talker_dio_logger/talker_dio_logger_settings.dart';
 export 'package:injectable/injectable.dart';
+export 'package:gap/gap.dart';
 //widgets
 // export '../widgets/xcore.dart';
 // export 'app/xcore.dart';

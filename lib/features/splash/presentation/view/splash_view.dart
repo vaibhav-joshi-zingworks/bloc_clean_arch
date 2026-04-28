@@ -15,49 +15,36 @@ class SplashView extends StatelessWidget {
     return BlocProvider(
       create: (_) => sl<SplashBloc>()..add(const SplashEvent.started()),
       child: AppScaffold(
-        //TODO: Implement BlocConsumer
-        body: BlocListener<SplashBloc, SplashState>(
-          listener: (context, state) {
-            state.whenOrNull(
-              loaded: (status) {
-                switch (status) {
-                  case AppStatus.authenticated:
+        body: BlocConsumer<SplashBloc, SplashState>(builder: (context, state) {
+          return state.when(
+            initial: () => const SizedBox(),
+            loading: () => AppLoadingWidget(),
+            loaded: (_) => const SizedBox(), // UI handled via navigation
+            error: (message) => Center(
+              child: Text("Error: $message"),
+            ),
+          );
+        }, listener: (context, state) {
+          state.whenOrNull(
+            loaded: (status) {
+              switch (status) {
+                case AppStatus.authenticated:
                   // TODO: navigate to home
-                    break;
-
-                  case AppStatus.unauthenticated:
+                  break;
+                case AppStatus.unauthenticated:
                   // TODO: navigate to login
-                    break;
-
-                  case AppStatus.firstLaunch:
+                  break;
+                case AppStatus.firstLaunch:
                   // TODO: navigate to onboarding
-                    break;
-                }
-              },
-              error: (message) {
-                // TODO: show error snackbar/dialog
-                debugPrint("Error: $message");
-              },
-            );
-          },
-          child: BlocBuilder<SplashBloc, SplashState>(
-            builder: (context, state) {
-              return state.when(
-                initial: () => const SizedBox(),
-
-                loading: () => const Center(
-                  child: CircularProgressIndicator(),
-                ),
-
-                loaded: (_) => const SizedBox(), // UI handled via navigation
-
-                error: (message) => Center(
-                  child: Text("Error: $message"),
-                ),
-              );
+                  break;
+              }
             },
-          ),
-        ),
+            error: (message) {
+              // TODO: show error snackbar/dialog
+              debugPrint("Error: $message");
+            },
+          );
+        }),
       ),
     );
   }

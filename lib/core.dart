@@ -91,6 +91,7 @@ export 'package:gap/gap.dart';
 // export '../widgets/xcore.dart';
 // export 'app/xcore.dart';
 export 'gen/xcore.dart';
+export 'core/network/use_case.dart';
 // export 'app_flavors.dart';
 // export 'app_initializer.dart';
 //main

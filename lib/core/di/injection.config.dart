@@ -17,6 +17,11 @@ import '../../app/bootstrap/app_initializer_cubit.dart' as _i163;
 import '../../app/providers/global_message_cubit.dart' as _i938;
 import '../../app/providers/locale_cubit.dart' as _i215;
 import '../../core.dart' as _i943;
+import '../../features/auth/data/datasources/auth_remote_data_source.dart'
+    as _i107;
+import '../../features/auth/domain/repository/auth_repository.dart' as _i961;
+import '../../features/auth/domain/usecases/login_usecase.dart' as _i188;
+import '../../features/auth/presentation/bloc/auth_bloc.dart' as _i797;
 import '../../features/settings/xcore.dart' as _i691;
 import '../../features/splash/data/datasource/splash_local_data_source.dart'
     as _i552;
@@ -85,6 +90,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i943.AppLifecycleService>(
         () => injectionModule.appLifecycleService());
     gh.lazySingleton<_i583.GoRouter>(() => injectionModule.router());
+    gh.lazySingleton<_i352.BrightnessProvider>(
+        () => injectionModule.brightnessProvider());
     gh.lazySingleton<_i943.UrlLauncherService>(() => injectionModule
         .urlLauncherService(gh<_i943.UrlLaunchStrategyFactory>()));
     gh.lazySingleton<_i943.ConnectivityPlusAdapter>(() =>
@@ -173,6 +180,14 @@ extension GetItInjectableX on _i174.GetIt {
         ));
     gh.lazySingleton<_i943.BaseApiService>(
         () => injectionModule.baseApiService(gh<_i943.Dio>()));
+    gh.lazySingleton<_i107.AuthRemoteDataSource>(
+        () => injectionModule.authRemoteDataSource(gh<_i943.BaseApiService>()));
+    gh.lazySingleton<_i961.AuthRepository>(
+        () => injectionModule.authRepository(gh<_i107.AuthRemoteDataSource>()));
+    gh.lazySingleton<_i188.LoginUseCase>(
+        () => injectionModule.loginUseCase(gh<_i961.AuthRepository>()));
+    gh.factory<_i797.AuthBloc>(
+        () => injectionModule.authBloc(gh<_i188.LoginUseCase>()));
     return this;
   }
 }

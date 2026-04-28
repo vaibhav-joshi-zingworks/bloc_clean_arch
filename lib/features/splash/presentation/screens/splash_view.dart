@@ -1,5 +1,7 @@
+import 'package:bloc_clean_arch/app/router/route_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core.dart';
 import '../../domain/entities/app_status.dart';
@@ -32,9 +34,11 @@ class SplashView extends StatelessWidget {
                   // TODO: navigate to home
                   break;
                 case AppStatus.unauthenticated:
+                  Global.navigatorKey.currentContext!.pushNamed(RouteName.login);
                   // TODO: navigate to login
                   break;
                 case AppStatus.firstLaunch:
+                  Global.navigatorKey.currentContext!.pushNamed(RouteName.login);
                   // TODO: navigate to onboarding
                   break;
               }

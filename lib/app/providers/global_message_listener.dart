@@ -1,12 +1,12 @@
-import 'package:flutter/material.dart';
+import 'package:bloc_clean_arch/app/providers/global_message_cubit.dart';
+import 'package:bloc_clean_arch/app/xcore.dart';
+import 'package:bloc_clean_arch/core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../core.dart';
-import '../xcore.dart';
 
 class GlobalMessageListener extends StatelessWidget {
-  final Widget child;
 
   const GlobalMessageListener({super.key, required this.child});
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {

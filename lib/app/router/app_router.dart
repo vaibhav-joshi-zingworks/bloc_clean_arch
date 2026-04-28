@@ -3,7 +3,7 @@ import 'package:bloc_clean_arch/app/router/router_extension.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core.dart';
-import '../../features/splash/presentation/view/splash_view.dart';
+import '../../features/splash/presentation/screens/splash_view.dart';
 
 class AppRouter {
   static GoRouter createRouter({

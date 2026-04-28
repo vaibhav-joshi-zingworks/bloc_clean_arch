@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
+import 'dart:ui';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LocaleCubit extends Cubit<Locale?> {
-  LocaleCubit() : super(null); // ✅ null = system locale
+  LocaleCubit() : super(null); // null = system locale
 
   void setLocale(Locale? locale) {
     emit(locale);

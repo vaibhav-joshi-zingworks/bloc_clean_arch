@@ -1,5 +1,7 @@
+import 'package:bloc_clean_arch/core/services/app_device_info/infrastructure/services/brightness_provider.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../app/providers/global_message_cubit.dart';
 import '../../app/providers/locale_cubit.dart';
 import '../../app/router/app_router.dart';
 import '../../app/xcore.dart';
@@ -290,8 +292,9 @@ abstract class InjectionModule {
   ThemeCubit themeCubit(
     LoadThemeModeUseCase loadThemeModeUseCase,
     SaveThemeModeUseCase saveThemeModeUseCase,
+      BrightnessProvider brightnessProvider,
   ) =>
-      ThemeCubit(loadThemeModeUseCase, saveThemeModeUseCase);
+      ThemeCubit(loadThemeModeUseCase, saveThemeModeUseCase,brightnessProvider);
 
   @lazySingleton
   SplashLocalDataSource splashLocalDataSource(StorageFacade storage) =>

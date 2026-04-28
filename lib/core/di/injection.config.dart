@@ -14,8 +14,8 @@ import 'package:go_router/go_router.dart' as _i583;
 import 'package:injectable/injectable.dart' as _i526;
 
 import '../../app/bootstrap/app_initializer_cubit.dart' as _i163;
+import '../../app/providers/global_message_cubit.dart' as _i938;
 import '../../app/providers/locale_cubit.dart' as _i215;
-import '../../app/xcore.dart' as _i846;
 import '../../core.dart' as _i943;
 import '../../features/settings/xcore.dart' as _i691;
 import '../../features/splash/data/datasource/splash_local_data_source.dart'
@@ -25,10 +25,9 @@ import '../../features/splash/domain/repositories/splash_repository.dart'
 import '../../features/splash/domain/usecases/get_app_status_usecase.dart'
     as _i1043;
 import '../../features/splash/presentation/bloc/splash_bloc.dart' as _i442;
-import '../services/analytics/domain/facades/analytics_facade.dart' as _i288;
+import '../services/app_device_info/infrastructure/services/brightness_provider.dart'
+    as _i352;
 import '../services/encryption/xcore.dart' as _i0;
-import '../services/notification/domain/strategies/notification_strategy.dart'
-    as _i242;
 import 'injection.dart' as _i464;
 
 extension GetItInjectableX on _i174.GetIt {
@@ -51,7 +50,7 @@ extension GetItInjectableX on _i174.GetIt {
       () => injectionModule.appDeviceInfoService(),
       preResolve: true,
     );
-    gh.singleton<_i846.GlobalMessageCubit>(
+    gh.singleton<_i938.GlobalMessageCubit>(
         () => injectionModule.globalMessageCubit());
     gh.singleton<_i215.LocaleCubit>(() => injectionModule.localeCubit());
     gh.lazySingleton<_i943.FlutterSecureStorage>(
@@ -151,17 +150,18 @@ extension GetItInjectableX on _i174.GetIt {
         injectionModule.loadThemeModeUseCase(gh<_i691.ThemeRepository>()));
     gh.lazySingleton<_i691.SaveThemeModeUseCase>(() =>
         injectionModule.saveThemeModeUseCase(gh<_i691.ThemeRepository>()));
-    gh.factory<_i442.SplashBloc>(
-        () => _i442.SplashBloc(gh<_i1043.GetAppStatusUseCase>()));
     gh.lazySingleton<_i943.NetworkMonitorService>(() => injectionModule
         .networkMonitorService(gh<_i943.NetworkMonitorRepository>()));
     gh.lazySingleton<_i163.AppInitializerCubit>(() => _i163.AppInitializerCubit(
-          analytics: gh<_i288.AnalyticsFacade>(),
-          notificationStrategy: gh<_i242.NotificationStrategy>(),
+          analytics: gh<_i943.AnalyticsFacade>(),
+          notificationStrategy: gh<_i943.NotificationStrategy>(),
         ));
+    gh.factory<_i442.SplashBloc>(
+        () => _i442.SplashBloc(gh<_i1043.GetAppStatusUseCase>()));
     gh.singleton<_i691.ThemeCubit>(() => injectionModule.themeCubit(
           gh<_i691.LoadThemeModeUseCase>(),
           gh<_i691.SaveThemeModeUseCase>(),
+          gh<_i352.BrightnessProvider>(),
         ));
     gh.lazySingleton<_i943.NetworkInterceptor>(() =>
         injectionModule.networkInterceptor(gh<_i943.NetworkMonitorService>()));

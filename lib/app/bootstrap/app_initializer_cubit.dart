@@ -1,5 +1,6 @@
 import 'package:bloc_clean_arch/core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 
 @lazySingleton
 class AppInitializerCubit extends Cubit<void> {

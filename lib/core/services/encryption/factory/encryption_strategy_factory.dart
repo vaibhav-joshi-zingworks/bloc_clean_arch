@@ -10,7 +10,13 @@ class EncryptionStrategyFactory {
   }) {
     switch (type) {
       case EncryptionType.aes:
-        return AesEncryptionStrategy(key, mode: aesMode ?? AESMode.cbc, padding: padding);
+        // If callers pass `padding: null`, keep the strategy's own default ('PKCS7')
+        // instead of disabling padding completely.
+        return AesEncryptionStrategy(
+          key,
+          mode: aesMode ?? AESMode.cbc,
+          padding: padding ?? 'PKCS7',
+        );
     // case EncryptionType.rsa:
     //   if (privateKey == null) throw ArgumentError('Private key required for RSA');
     //   return RsaEncryptionStrategy(key, privateKey);

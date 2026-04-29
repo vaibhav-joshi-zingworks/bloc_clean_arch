@@ -5,12 +5,12 @@ import '../xcore.dart';
 class UrlLaunchStrategyFactory {
   List<UrlLaunchStrategy> createStrategies() {
     return [
-      WebUrlLaunchStrategy(),
       WhatsAppUrlLaunchStrategy(),
       MapsUrlLaunchStrategy(),
       TelUrlLaunchStrategy(),
       SmsUrlLaunchStrategy(),
       MailtoUrlLaunchStrategy(),
+      WebUrlLaunchStrategy(),
     ];
   }
 

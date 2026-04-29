@@ -18,6 +18,7 @@ import '../../features/splash/domain/usecases/get_app_status_usecase.dart';
 import '../services/app_device_info/infrastructure/services/flutter_brightness_provider.dart';
 import '../services/encryption/xcore.dart';
 import '/core.dart';
+import 'package:injectable/injectable.dart';
 import 'injection.config.dart';
 
 final sl = GetIt.instance;

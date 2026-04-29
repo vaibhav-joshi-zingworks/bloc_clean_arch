@@ -1,27 +1,13 @@
-import 'package:equatable/equatable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../../core.dart';
-
 import '../../domain/entity/user_entity.dart';
 
-abstract class AuthState extends Equatable {
-  @override
-  List<Object?> get props => [];
-}
+part 'auth_state.freezed.dart';
 
-class AuthInitial extends AuthState {}
-
-class AuthLoading extends AuthState {}
-
-class AuthSuccess extends AuthState {
-  final UserEntity user;
-  AuthSuccess({required this.user});
-  @override
-  List<Object?> get props => [user];
-}
-
-class AuthFailure extends AuthState {
-  final AppException appException;
-  AuthFailure({required this.appException});
-  @override
-  List<Object?> get props => [appException];
+@freezed
+sealed class AuthState with _$AuthState {
+  const factory AuthState.initial() = AuthInitial;
+  const factory AuthState.loading() = AuthLoading;
+  const factory AuthState.success({required UserEntity user}) = AuthSuccess;
+  const factory AuthState.failure({required AppException appException}) = AuthFailure;
 }

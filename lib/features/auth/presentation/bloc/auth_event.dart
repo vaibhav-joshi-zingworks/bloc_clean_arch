@@ -1,14 +1,11 @@
-import 'package:equatable/equatable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-abstract class AuthEvent extends Equatable {
-  @override
-  List<Object?> get props => [];
-}
+part 'auth_event.freezed.dart';
 
-class AuthLoginRequested extends AuthEvent {
-  final String email;
-  final String password;
-  AuthLoginRequested({required this.email, required this.password});
-  @override
-  List<Object?> get props => [email, password];
+@freezed
+sealed class AuthEvent with _$AuthEvent {
+  const factory AuthEvent.loginRequested({
+    required String email,
+    required String password,
+  }) = AuthLoginRequested;
 }

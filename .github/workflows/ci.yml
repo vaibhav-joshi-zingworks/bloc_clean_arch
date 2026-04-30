@@ -1,0 +1,110 @@
+# ==========================================
+# Flutter CI Pipeline (FVM-based)
+# ==========================================
+# Purpose:
+# - Validate code quality on every push/PR
+# - Ensure project builds & tests pass
+# - Keep CI environment identical to local (via .fvmrc)
+
+name: Flutter CI
+
+on:
+  # Trigger CI on push to main branch
+  push:
+    branches: [main]
+
+  # Trigger CI on pull requests targeting main
+  pull_request:
+    branches: [main]
+
+# ------------------------------------------
+# Permissions
+# ------------------------------------------
+# Minimal required permissions (principle of least privilege)
+permissions:
+  contents: read
+
+# ------------------------------------------
+# Concurrency Control
+# ------------------------------------------
+# Cancels previous runs if new commit is pushed to same branch
+# Prevents wasting CI minutes on outdated builds
+concurrency:
+  group: flutter-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: Run Checks
+    runs-on: ubuntu-latest
+
+    # ------------------------------------------
+    # Timeout
+    # ------------------------------------------
+    # Prevents hanging builds (default is 6h, which is too long)
+    timeout-minutes: 20
+
+    steps:
+      # ------------------------------------------
+      # 1️⃣ Checkout repository
+      # ------------------------------------------
+      # Pulls your code into the GitHub runner
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      # ------------------------------------------
+      # 2️⃣ Setup Flutter SDK via FVM
+      # ------------------------------------------
+      # Reads version from `.fvmrc`
+      # Ensures CI uses EXACT same Flutter version as local dev
+      # Cache enabled for faster builds
+      - name: ⚡ Setup Flutter (from FVM)
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+
+      # ------------------------------------------
+      # 3️⃣ Fail-fast shell behavior
+      # ------------------------------------------
+      # Ensures workflow stops immediately on any error
+      - name: 🛠️ Setup shell
+        run: set -e
+
+      # ------------------------------------------
+      # 4️⃣ Install dependencies
+      # ------------------------------------------
+      # Fetch all Dart/Flutter packages
+      - name: 📦 Install dependencies
+        run: flutter pub get
+
+      # ------------------------------------------
+      # 5️⃣ Validate dependency resolution
+      # ------------------------------------------
+      # Fails if pubspec.lock is inconsistent or broken
+      - name: 🔐 Verify dependencies
+        run: flutter pub get --dry-run
+
+      # ------------------------------------------
+      # 6️⃣ Static code analysis
+      # ------------------------------------------
+      # Detects errors, bad patterns, and lint violations
+      # Tip: add --fatal-infos for stricter enforcement
+      - name: 🔍 Analyze
+        run: dart analyze
+
+      # ------------------------------------------
+      # 7️⃣ Code formatting validation
+      # ------------------------------------------
+      # Ensures consistent formatting across team
+      # Fails if formatting is incorrect
+      - name: 🎯 Format check
+        run: dart format --set-exit-if-changed .
+
+      # ------------------------------------------
+      # 8️⃣ Run tests
+      # ------------------------------------------
+      # Executes all unit & widget tests
+      # --no-pub avoids redundant dependency fetch
+      - name: 🧪 Run tests
+        run: flutter test --no-pub

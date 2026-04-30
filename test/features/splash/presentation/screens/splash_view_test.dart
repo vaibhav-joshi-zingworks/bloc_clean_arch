@@ -1,12 +1,9 @@
 import 'package:bloc_clean_arch/core.dart';
-import 'package:bloc_clean_arch/features/splash/domain/entities/app_status.dart';
 import 'package:bloc_clean_arch/features/splash/presentation/bloc/splash_bloc.dart';
 import 'package:bloc_clean_arch/features/splash/presentation/bloc/splash_event.dart';
 import 'package:bloc_clean_arch/features/splash/presentation/bloc/splash_state.dart';
 import 'package:bloc_clean_arch/features/splash/presentation/screens/splash_view.dart';
 import 'package:bloc_test/bloc_test.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

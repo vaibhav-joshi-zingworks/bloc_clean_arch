@@ -5,7 +5,6 @@ import 'package:bloc_clean_arch/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:bloc_clean_arch/features/auth/presentation/bloc/auth_event.dart';
 import 'package:bloc_clean_arch/features/auth/presentation/bloc/auth_state.dart';
 import 'package:bloc_test/bloc_test.dart';
-import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -123,6 +122,7 @@ void main() {
           password: 'password456',
         ));
       },
+      wait: Duration(milliseconds: 200),
       expect: () => [
         const AuthState.loading(),
         AuthState.success(user: tUser),

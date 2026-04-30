@@ -1,6 +1,5 @@
 import 'package:bloc_clean_arch/app/bootstrap/app_initializer_cubit.dart';
 import 'package:bloc_clean_arch/core.dart';
-import 'package:bloc_clean_arch/core/services/notification/infrastructure/strategies/notification_strategy.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

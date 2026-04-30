@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+
 import '../../domain/entities/app_status.dart';
 
 part 'splash_state.freezed.dart';

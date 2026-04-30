@@ -1,0 +1,142 @@
+# ==========================================
+# Flutter CD Pipeline (Production-Grade)
+# ==========================================
+# Purpose:
+# - Runs ONLY after CI succeeds
+# - Builds APK + AAB
+# - Publishes GitHub Release with artifacts
+# - Ensures reproducible, safe builds
+
+name: Flutter CD
+
+on:
+  # Trigger only after CI completes
+  workflow_run:
+    workflows: ["Flutter CI"]
+    types:
+      - completed
+
+# Minimal required permissions
+permissions:
+  contents: write
+
+# Prevent duplicate releases for same commit
+concurrency:
+  group: flutter-cd-${{ github.event.workflow_run.head_sha }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build & Release
+    runs-on: ubuntu-latest
+
+    # Only run if CI passed
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    # Prevent stuck builds
+    timeout-minutes: 30
+
+    steps:
+      # ------------------------------------------
+      # 1️⃣ Checkout EXACT commit from CI
+      # ------------------------------------------
+      # Using SHA ensures reproducibility (critical)
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      # ------------------------------------------
+      # 2️⃣ Setup Flutter via FVM (.fvmrc)
+      # ------------------------------------------
+      # Ensures same version as local + CI
+      - name: ⚡ Setup Flutter (FVM)
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+
+      # ------------------------------------------
+      # 3️⃣ Fail-fast shell
+      # ------------------------------------------
+      - name: 🛠️ Setup shell
+        run: set -e
+
+      # ------------------------------------------
+      # 4️⃣ Install dependencies
+      # ------------------------------------------
+      - name: 📦 Install dependencies
+        run: flutter pub get
+
+      # ------------------------------------------
+      # 5️⃣ Verify dependency integrity
+      # ------------------------------------------
+      - name: 🔐 Verify dependencies
+        run: flutter pub get --dry-run
+
+      # ------------------------------------------
+      # 6️⃣ Extract metadata (version, name, timestamp)
+      # ------------------------------------------
+      - name: 🏷️ Set Version Info
+        run: |
+          VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
+          BUILD=$(grep '^version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f2)
+          DATETIME=$(date +'%Y%m%d_%H%M')
+          APP_NAME=$(grep '^name:' pubspec.yaml | awk '{print $2}')
+
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "BUILD=$BUILD" >> $GITHUB_ENV
+          echo "DATETIME=$DATETIME" >> $GITHUB_ENV
+          echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+
+      # ------------------------------------------
+      # 7️⃣ Build APK (release)
+      # ------------------------------------------
+      - name: 🏗️ Build APK
+        run: |
+          flutter build apk --release --obfuscate --split-debug-info=./debug-info
+          mkdir -p release
+          cp build/app/outputs/flutter-apk/app-release.apk \
+            release/${APP_NAME}-${VERSION}+${BUILD}-${DATETIME}.apk
+
+      # ------------------------------------------
+      # 8️⃣ Build AAB (Play Store)
+      # ------------------------------------------
+      - name: 📦 Build AAB
+        run: |
+          flutter build appbundle --release --obfuscate --split-debug-info=./debug-info
+          cp build/app/outputs/bundle/release/app-release.aab \
+            release/${APP_NAME}-${VERSION}+${BUILD}-${DATETIME}.aab
+
+      # ------------------------------------------
+      # 9️⃣ Validate artifacts exist
+      # ------------------------------------------
+      - name: ✅ Validate artifacts
+        run: |
+          ls -lh release
+          test -f release/*.apk
+          test -f release/*.aab
+
+      # ------------------------------------------
+      # 🔟 Generate release notes
+      # ------------------------------------------
+      - name: 📝 Generate release notes
+        run: |
+          echo "🚀 Release ${VERSION}+${BUILD}" > release_notes.txt
+          echo "" >> release_notes.txt
+          echo "Commit: ${{ github.event.workflow_run.head_sha }}" >> release_notes.txt
+          echo "Date: $(date)" >> release_notes.txt
+
+      # ------------------------------------------
+      # 1️⃣1️⃣ Create GitHub Release
+      # ------------------------------------------
+      - name: 🚀 Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: v${{ env.VERSION }}-${{ env.DATETIME }}
+          name: Release v${{ env.VERSION }}+${{ env.BUILD }}
+          bodyFile: release_notes.txt
+          artifacts: |
+            release/*.apk
+            release/*.aab
+          token: ${{ secrets.GITHUB_TOKEN }}

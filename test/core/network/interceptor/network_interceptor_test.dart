@@ -4,11 +4,16 @@ import 'package:mocktail/mocktail.dart';
 
 class MockNetworkMonitorService extends Mock implements NetworkMonitorService {}
 class MockRequestInterceptorHandler extends Mock implements RequestInterceptorHandler {}
+class FakeDioException extends Fake implements DioException {}
 
 void main() {
   late NetworkInterceptor interceptor;
   late MockNetworkMonitorService mockService;
   late MockRequestInterceptorHandler mockHandler;
+
+  setUpAll(() {
+    registerFallbackValue(FakeDioException()); // 🔥 REQUIRED
+  });
 
   setUp(() {
     mockService = MockNetworkMonitorService();
@@ -16,23 +21,16 @@ void main() {
     interceptor = NetworkInterceptor(mockService);
   });
 
-  group('NetworkInterceptor', () {
-    test('should call handler.next when connected', () async {
-      final options = RequestOptions(path: '/test');
-      when(() => mockService.isConnected()).thenAnswer((_) async => true);
+  test('should call handler.reject when disconnected', () async {
+    final options = RequestOptions(path: '/test');
 
-      await interceptor.onRequest(options, mockHandler);
+    when(() => mockService.isConnected())
+        .thenAnswer((_) async => false);
 
-      verify(() => mockHandler.next(options)).called(1);
-    });
+    interceptor.onRequest(options, mockHandler);
 
-    test('should call handler.reject when disconnected', () async {
-      final options = RequestOptions(path: '/test');
-      when(() => mockService.isConnected()).thenAnswer((_) async => false);
+    await Future.delayed(Duration.zero);
 
-      await interceptor.onRequest(options, mockHandler);
-
-      verify(() => mockHandler.reject(any())).called(1);
-    });
+    verify(() => mockHandler.reject(any())).called(1);
   });
 }

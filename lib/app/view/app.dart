@@ -1,11 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+
+import '/core.dart';
 import '../../core/design/responsive_context.dart';
 import '../../features/settings/xcore.dart';
 import '../providers/global_message_cubit.dart';
 import '../providers/locale_cubit.dart';
 import '../xcore.dart';
-import '/core.dart';
 
 class App extends StatefulWidget {
   const App({super.key});

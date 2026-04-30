@@ -1,4 +1,3 @@
-import 'package:bloc_clean_arch/core.dart';
 import 'package:bloc_clean_arch/features/auth/data/models/user_model.dart';
 
 abstract class AuthRemoteDataSource {

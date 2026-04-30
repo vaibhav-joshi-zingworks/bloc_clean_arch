@@ -1,7 +1,6 @@
 import 'package:bloc_clean_arch/app/bootstrap/app_initializer_cubit.dart';
 import 'package:bloc_clean_arch/app/providers/global_message_cubit.dart';
 import 'package:bloc_clean_arch/app/providers/locale_cubit.dart';
-import 'package:bloc_clean_arch/app/view/app.dart';
 import 'package:bloc_clean_arch/core/di/injection.dart';
 import 'package:bloc_clean_arch/features/settings/presentation/cubit/theme_cubit.dart';
 import 'package:bloc_clean_arch/features/settings/presentation/cubit/theme_state.dart';
@@ -37,11 +36,11 @@ void main() {
     sl.registerSingleton<AppInitializerCubit>(mockAppInitializerCubit);
 
     when(() => mockThemeCubit.loadTheme()).thenAnswer((_) async => {});
-    when(() => mockThemeCubit.state).thenReturn(const ThemeState(mode: ThemeMode.system));
+    when(() => mockThemeCubit.state).thenReturn(const ThemeState(mode: ThemeMode.system, isLoading: true));
     when(() => mockLocaleCubit.state).thenReturn(const Locale('en'));
     when(() => mockAppInitializerCubit.initialize()).thenAnswer((_) async => {});
     when(() => mockGlobalMessageCubit.state).thenReturn(null);
-    
+
     // For GoRouter, we might need a real one or mock it properly if used in MaterialApp.router
   });
 

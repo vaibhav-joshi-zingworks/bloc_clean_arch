@@ -11,6 +11,7 @@ void main() {
   late MockThemeLocalDataSource mockLocalDataSource;
 
   setUp(() {
+    registerFallbackValue(ThemeMode.system);
     mockLocalDataSource = MockThemeLocalDataSource();
     repository = ThemeRepositoryImpl(mockLocalDataSource);
   });

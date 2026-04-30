@@ -1,5 +1,3 @@
-import 'package:bloc_clean_arch/core/services/security/infrastructure/adapters/safe_device_adapter.dart';
-import 'package:bloc_clean_arch/core/services/security/infrastructure/service/safe_device_service.dart';
 import 'package:bloc_clean_arch/core/services/security/xcore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

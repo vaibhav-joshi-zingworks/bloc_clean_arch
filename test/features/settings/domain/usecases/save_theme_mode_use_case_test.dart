@@ -11,6 +11,7 @@ void main() {
   late MockThemeRepository mockThemeRepository;
 
   setUp(() {
+    registerFallbackValue(ThemeMode.system);
     mockThemeRepository = MockThemeRepository();
     useCase = SaveThemeModeUseCase(mockThemeRepository);
   });

@@ -2,7 +2,6 @@ import 'package:bloc_clean_arch/core.dart';
 import 'package:bloc_clean_arch/features/auth/domain/entity/user_entity.dart';
 import 'package:bloc_clean_arch/features/auth/domain/repository/auth_repository.dart';
 import 'package:bloc_clean_arch/features/auth/domain/usecases/login_usecase.dart';
-import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

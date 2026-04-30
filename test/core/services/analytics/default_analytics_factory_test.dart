@@ -1,7 +1,5 @@
-import 'package:bloc_clean_arch/core/services/analytics/domain/strategies/analytics_strategy.dart';
 import 'package:bloc_clean_arch/core/services/analytics/enum/analytics_type.dart';
 import 'package:bloc_clean_arch/core/services/analytics/infrastructure/factories/default_analytics_factory.dart';
-import 'package:bloc_clean_arch/core/services/analytics/infrastructure/strategies/firebase_analytics_strategy.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

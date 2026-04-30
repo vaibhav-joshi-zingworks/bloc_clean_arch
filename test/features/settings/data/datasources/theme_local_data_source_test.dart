@@ -1,7 +1,6 @@
 import 'package:bloc_clean_arch/app/storage_keys.dart';
 import 'package:bloc_clean_arch/core.dart';
 import 'package:bloc_clean_arch/features/settings/data/datasources/theme_local_data_source.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

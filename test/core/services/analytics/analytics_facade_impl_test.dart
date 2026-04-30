@@ -1,5 +1,4 @@
 import 'package:bloc_clean_arch/core.dart';
-import 'package:bloc_clean_arch/core/services/analytics/infrastructure/facades/analytics_facade_impl.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

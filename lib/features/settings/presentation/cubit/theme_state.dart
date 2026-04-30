@@ -1,12 +1,13 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
-class ThemeState {
+class ThemeState extends Equatable {
   final ThemeMode mode;
   final bool isLoading;
 
   const ThemeState({
     required this.mode,
-    this.isLoading = false,
+    required this.isLoading,
   });
 
   ThemeState copyWith({
@@ -18,4 +19,7 @@ class ThemeState {
       isLoading: isLoading ?? this.isLoading,
     );
   }
+
+  @override
+  List<Object?> get props => [mode, isLoading]; // 🔥 IMPORTANT
 }

@@ -1,7 +1,5 @@
-import 'dart:io';
 import 'package:bloc_clean_arch/core.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 
 void main() {
   group('Failure.handleDioError', () {

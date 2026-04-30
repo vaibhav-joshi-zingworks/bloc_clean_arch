@@ -1,11 +1,12 @@
 import 'package:bloc_clean_arch/core/services/app_device_info/infrastructure/services/brightness_provider.dart';
 import 'package:bloc_clean_arch/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:injectable/injectable.dart';
 
+import '/core.dart';
 import '../../app/providers/global_message_cubit.dart';
 import '../../app/providers/locale_cubit.dart';
 import '../../app/router/app_router.dart';
-import '../../app/xcore.dart';
 import '../../features/auth/data/datasources/auth_remote_data_source.dart';
 import '../../features/auth/data/repository/auth_repository_impl.dart';
 import '../../features/auth/domain/repository/auth_repository.dart';
@@ -17,8 +18,6 @@ import '../../features/splash/domain/repositories/splash_repository.dart';
 import '../../features/splash/domain/usecases/get_app_status_usecase.dart';
 import '../services/app_device_info/infrastructure/services/flutter_brightness_provider.dart';
 import '../services/encryption/xcore.dart';
-import '/core.dart';
-import 'package:injectable/injectable.dart';
 import 'injection.config.dart';
 
 final sl = GetIt.instance;

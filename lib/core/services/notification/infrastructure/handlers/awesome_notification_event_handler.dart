@@ -1,6 +1,6 @@
-import '/core.dart';
 import 'package:go_router/go_router.dart';
-import '../../../analytics/xcore.dart';
+
+import '/core.dart';
 
 class AwesomeNotificationEventHandler {
   @pragma("vm:entry-point")

@@ -11,8 +11,7 @@ void main() {
     });
 
     test('LaunchModeConfig should default to externalApplication', () {
-      const cfg = LaunchModeConfig();
-      expect(cfg.defaultMode, LaunchMode.externalApplication);
+      expect(LaunchModeConfig.defaultMode, LaunchMode.externalApplication);
     });
   });
 

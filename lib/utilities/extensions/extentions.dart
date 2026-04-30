@@ -8,7 +8,9 @@ extension CapitalizeFirst on String {
 
 extension DateTimeExtensions on DateTime {
   String get dateOnly {
-    return DateTime(day, month, year).toString().split(" ").first;
+    return "${year.toString().padLeft(4, '0')}-"
+        "${month.toString().padLeft(2, '0')}-"
+        "${day.toString().padLeft(2, '0')}";
   }
 }
 

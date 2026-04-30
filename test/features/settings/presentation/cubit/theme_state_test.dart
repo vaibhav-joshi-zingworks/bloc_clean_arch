@@ -12,7 +12,7 @@ void main() {
     });
 
     test('copyWith should return updated object', () {
-      const state = ThemeState(mode: ThemeMode.light);
+      const state = ThemeState(mode: ThemeMode.light,isLoading: false);
       final updated = state.copyWith(mode: ThemeMode.dark);
       expect(updated.mode, ThemeMode.dark);
     });

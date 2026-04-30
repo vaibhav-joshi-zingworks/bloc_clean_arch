@@ -6,11 +6,11 @@ export 'domain/repositories/notification_repository.dart';
 export 'domain/strategies/notification_rate_limit_strategy.dart';
 export 'domain/strategies/notification_strategy.dart';
 export 'factories/notification_strategy_factory.dart';
-export 'infrastructure/strategies/awesome_notification_strategy.dart';
-export 'infrastructure/strategies/local_notification_rate_limit_strategy.dart';
 export 'infrastructure/adapters/awesome_notifications_adapter.dart';
 export 'infrastructure/channels/default_notification_channel_registry.dart';
 export 'infrastructure/handlers/awesome_notification_event_handler.dart';
 export 'infrastructure/repositories/shared_prefs_notification_repository.dart';
+export 'infrastructure/strategies/awesome_notification_strategy.dart';
+export 'infrastructure/strategies/local_notification_rate_limit_strategy.dart';
 
 

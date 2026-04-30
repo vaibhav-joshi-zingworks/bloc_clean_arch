@@ -1,21 +1,18 @@
 import 'package:bloc_clean_arch/core.dart';
-import 'package:bloc_clean_arch/core/services/app_device_info/infrastructure/adapters/device_info_adapter.dart';
-import 'package:bloc_clean_arch/core/services/app_device_info/infrastructure/services/app_device_info_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
 class MockDeviceInfoAdapter extends Mock implements DeviceInfoAdapter {}
 class MockAndroidDeviceInfo extends Mock implements AndroidDeviceInfo {}
 class MockAndroidBuildVersion extends Mock implements AndroidBuildVersion {}
 
 void main() {
-  late AppDeviceInfoService service;
+  // late AppDeviceInfoService service;
   late MockDeviceInfoAdapter mockAdapter;
 
   setUp(() {
     mockAdapter = MockDeviceInfoAdapter();
-    service = AppDeviceInfoService();
+    // service = AppDeviceInfoService();
     // Since it's a singleton and might be initialized, we should be aware of that.
   });
 

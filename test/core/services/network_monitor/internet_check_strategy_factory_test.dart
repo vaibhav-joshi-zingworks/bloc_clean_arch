@@ -1,4 +1,3 @@
-import 'package:bloc_clean_arch/core/services/network_monitor/factories/internet_check_strategy_factory.dart';
 import 'package:bloc_clean_arch/core/services/network_monitor/xcore.dart';
 import 'package:flutter_test/flutter_test.dart';
 

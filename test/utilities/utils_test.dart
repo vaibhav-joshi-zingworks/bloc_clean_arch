@@ -1,6 +1,4 @@
 import 'package:bloc_clean_arch/core.dart';
-import 'package:bloc_clean_arch/utilities/enums/enums.dart';
-import 'package:bloc_clean_arch/utilities/utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

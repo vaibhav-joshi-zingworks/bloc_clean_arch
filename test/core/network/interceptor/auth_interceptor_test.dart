@@ -18,30 +18,34 @@ void main() {
 
   group('AuthInterceptor', () {
     test('should add Authorization header when token exists', () async {
-      // arrange
       final options = RequestOptions(path: '/test');
-      when(() => mockStorage.read(Flags.token)).thenAnswer((_) async => 'test-token');
-      when(() => mockStorage.read(Flags.refreshToken)).thenAnswer((_) async => null);
 
-      // act
-      await interceptor.onRequest(options, mockHandler);
+      when(() => mockStorage.read(Flags.token))
+          .thenAnswer((_) async => 'test-token');
+      when(() => mockStorage.read(Flags.refreshToken))
+          .thenAnswer((_) async => null);
 
-      // assert
+      interceptor.onRequest(options, mockHandler);
+
+      await Future.delayed(Duration.zero); // 🔥 fix
+
       expect(options.headers[HeaderKey.authorization], 'Bearer test-token');
       verify(() => mockHandler.next(options)).called(1);
     });
 
     test('should not add Authorization header when token is null', () async {
-      // arrange
       final options = RequestOptions(path: '/test');
-      when(() => mockStorage.read(any())).thenAnswer((_) async => null);
 
-      // act
-      await interceptor.onRequest(options, mockHandler);
+      when(() => mockStorage.read(any()))
+          .thenAnswer((_) async => null);
 
-      // assert
+      interceptor.onRequest(options, mockHandler);
+
+      await Future.delayed(Duration.zero);
+
       expect(options.headers.containsKey(HeaderKey.authorization), false);
-      verify(() => mockHandler.next(options)).called(1);
+
+      verify(() => mockHandler.next(options)).called(1); // ✅ now passes
     });
   });
 }

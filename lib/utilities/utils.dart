@@ -1,5 +1,4 @@
 import '../core.dart';
-import 'enums/enums.dart';
 
 class Utils {
   static Color getColor(MessageType result) {

@@ -2,12 +2,12 @@ import 'package:bloc_clean_arch/core/services/messaging/domain/messaging_service
 import 'package:flutter_test/flutter_test.dart';
 
 class TestMessagingService implements MessagingService {
-  bool _initialized = false;
+  // bool _initialized = false;
   String? _token;
 
   @override
   Future<void> initialize() async {
-    _initialized = true;
+    // _initialized = true;
     _token = 'token_123';
   }
 

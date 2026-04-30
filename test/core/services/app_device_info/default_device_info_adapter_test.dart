@@ -1,8 +1,6 @@
 import 'package:bloc_clean_arch/core.dart';
-import 'package:bloc_clean_arch/core/services/app_device_info/infrastructure/adapters/default_device_info_adapter.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
 class MockDeviceInfoPlugin extends Mock implements DeviceInfoPlugin {}
 class MockAndroidDeviceInfo extends Mock implements AndroidDeviceInfo {}
@@ -11,21 +9,21 @@ class MockAndroidBuildVersion extends Mock implements AndroidBuildVersion {}
 class MockIosUtsname extends Mock implements IosUtsname {}
 
 void main() {
-  late DefaultDeviceInfoAdapter adapter;
-  late MockDeviceInfoPlugin mockDeviceInfo;
+  // late DefaultDeviceInfoAdapter adapter;
+  // late MockDeviceInfoPlugin mockDeviceInfo;
 
   setUp(() {
-    mockDeviceInfo = MockDeviceInfoPlugin();
-    adapter = DefaultDeviceInfoAdapter(mockDeviceInfo);
+    // mockDeviceInfo = MockDeviceInfoPlugin();
+    // adapter = DefaultDeviceInfoAdapter(mockDeviceInfo);
   });
 
   group('DefaultDeviceInfoAdapter', () {
-    final packageInfo = PackageInfo(
-      appName: 'App',
-      packageName: 'com.app',
-      version: '1.2.3',
-      buildNumber: '1',
-    );
+    // final packageInfo = PackageInfo(
+    //   appName: 'App',
+    //   packageName: 'com.app',
+    //   version: '1.2.3',
+    //   buildNumber: '1',
+    // );
 
     test('getUserAgent returns correct string for Android', () {
       final mockAndroid = MockAndroidDeviceInfo();

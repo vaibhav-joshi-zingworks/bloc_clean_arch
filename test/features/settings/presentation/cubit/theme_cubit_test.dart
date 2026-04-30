@@ -18,10 +18,15 @@ void main() {
   late MockSaveThemeModeUseCase mockSaveThemeModeUseCase;
   late MockBrightnessProvider mockBrightnessProvider;
 
+  setUpAll(() {
+    registerFallbackValue(ThemeMode.system);
+  });
+
   setUp(() {
     mockLoadThemeModeUseCase = MockLoadThemeModeUseCase();
     mockSaveThemeModeUseCase = MockSaveThemeModeUseCase();
     mockBrightnessProvider = MockBrightnessProvider();
+
     themeCubit = ThemeCubit(
       mockLoadThemeModeUseCase,
       mockSaveThemeModeUseCase,
@@ -33,10 +38,15 @@ void main() {
     themeCubit.close();
   });
 
+  // ✅ Initial State
   test('initial state should be system and isLoading true', () {
-    expect(themeCubit.state, const ThemeState(mode: ThemeMode.system, isLoading: true));
+    expect(
+      themeCubit.state,
+      const ThemeState(mode: ThemeMode.system, isLoading: true),
+    );
   });
 
+  // ✅ Load Theme
   blocTest<ThemeCubit, ThemeState>(
     'emits correct ThemeMode when loadTheme is called',
     build: () {
@@ -50,28 +60,33 @@ void main() {
     ],
   );
 
+  // ✅ Set Theme
   blocTest<ThemeCubit, ThemeState>(
     'emits correct ThemeMode and saves it when setThemeMode is called',
     build: () {
       when(() => mockSaveThemeModeUseCase(any()))
-          .thenAnswer((_) async => {});
+          .thenAnswer((_) async {});
       return themeCubit;
     },
     act: (cubit) => cubit.setThemeMode(ThemeMode.light),
     expect: () => [
-      const ThemeState(mode: ThemeMode.light, isLoading: true), // initial state with new mode
+      const ThemeState(mode: ThemeMode.light, isLoading: true),
     ],
     verify: (_) {
       verify(() => mockSaveThemeModeUseCase(ThemeMode.light)).called(1);
     },
   );
 
+  // ✅ Toggle Tests
   group('toggle', () {
     blocTest<ThemeCubit, ThemeState>(
       'toggles from system (light brightness) to dark',
       build: () {
-        when(() => mockBrightnessProvider.getBrightness()).thenReturn(Brightness.light);
-        when(() => mockSaveThemeModeUseCase(any())).thenAnswer((_) async => {});
+        when(() => mockBrightnessProvider.getBrightness())
+            .thenReturn(Brightness.light);
+
+        when(() => mockSaveThemeModeUseCase(any()))
+            .thenAnswer((_) async {});
         return themeCubit;
       },
       act: (cubit) => cubit.toggle(),
@@ -81,10 +96,30 @@ void main() {
     );
 
     blocTest<ThemeCubit, ThemeState>(
+      'toggles from system (dark brightness) to light',
+      build: () {
+        when(() => mockBrightnessProvider.getBrightness())
+            .thenReturn(Brightness.dark);
+
+        when(() => mockSaveThemeModeUseCase(any()))
+            .thenAnswer((_) async {});
+        return themeCubit;
+      },
+      act: (cubit) => cubit.toggle(),
+      expect: () => [
+        const ThemeState(mode: ThemeMode.light, isLoading: true),
+      ],
+    );
+
+    blocTest<ThemeCubit, ThemeState>(
       'toggles from light to dark',
       seed: () => const ThemeState(mode: ThemeMode.light, isLoading: false),
       build: () {
-        when(() => mockSaveThemeModeUseCase(any())).thenAnswer((_) async => {});
+        when(() => mockBrightnessProvider.getBrightness())
+            .thenReturn(Brightness.light);
+
+        when(() => mockSaveThemeModeUseCase(any()))
+            .thenAnswer((_) async {});
         return themeCubit;
       },
       act: (cubit) => cubit.toggle(),
@@ -97,7 +132,11 @@ void main() {
       'toggles from dark to light',
       seed: () => const ThemeState(mode: ThemeMode.dark, isLoading: false),
       build: () {
-        when(() => mockSaveThemeModeUseCase(any())).thenAnswer((_) async => {});
+        when(() => mockBrightnessProvider.getBrightness())
+            .thenReturn(Brightness.dark);
+
+        when(() => mockSaveThemeModeUseCase(any()))
+            .thenAnswer((_) async {});
         return themeCubit;
       },
       act: (cubit) => cubit.toggle(),

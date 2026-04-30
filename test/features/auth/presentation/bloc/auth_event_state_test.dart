@@ -1,6 +1,6 @@
+import 'package:bloc_clean_arch/features/auth/domain/entity/user_entity.dart';
 import 'package:bloc_clean_arch/features/auth/presentation/bloc/auth_event.dart';
 import 'package:bloc_clean_arch/features/auth/presentation/bloc/auth_state.dart';
-import 'package:bloc_clean_arch/features/auth/domain/entity/user_entity.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

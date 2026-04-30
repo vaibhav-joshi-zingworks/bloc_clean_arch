@@ -1,8 +1,7 @@
-import 'package:bloc_clean_arch/core/services/notification/infrastructure/strategies/awesome_notification_strategy.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:bloc_clean_arch/core/services/notification/xcore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:awesome_notifications/awesome_notifications.dart';
 
 class MockNotificationRateLimitStrategy extends Mock implements NotificationRateLimitStrategy {}
 class MockAwesomeNotificationsAdapter extends Mock implements AwesomeNotificationsAdapter {}

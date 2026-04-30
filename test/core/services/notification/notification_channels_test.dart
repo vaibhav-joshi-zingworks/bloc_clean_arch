@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('NotificationChannels', () {
     test('key should return correct string', () {
-      expect(NotificationChannels.key(NotificationChannelType.general), 'general_channel');
+      expect(NotificationChannels.key(NotificationChannelType.general), 'general');
     });
   });
 }

@@ -4,8 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('PhoneUrlLaunchStrategy', () {
     test('should be instantiable', () {
-      final strategy = PhoneUrlLaunchStrategy();
-      expect(strategy, isA<PhoneUrlLaunchStrategy>());
+      final strategy = TelUrlLaunchStrategy();
+      expect(strategy, isA<TelUrlLaunchStrategy>());
     });
   });
 }

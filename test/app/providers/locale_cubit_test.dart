@@ -1,4 +1,5 @@
 import 'dart:ui';
+
 import 'package:bloc_clean_arch/app/providers/locale_cubit.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:bloc_clean_arch/core.dart';
 import 'package:bloc_clean_arch/core/services/encryption/xcore.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -32,7 +31,7 @@ void main() {
       
       when(() => mockEncryptionManager.encrypt(any())).thenReturn('encrypted_data');
 
-      await interceptor.onRequest(options, mockReqHandler);
+      interceptor.onRequest(options, mockReqHandler);
 
       expect(options.data, 'encrypted_data');
       verify(() => mockEncryptionManager.encrypt(jsonEncode(data))).called(1);
@@ -48,9 +47,9 @@ void main() {
       
       when(() => mockEncryptionManager.decrypt(any())).thenReturn(jsonEncode({'result': 'success'}));
 
-      await interceptor.onResponse(response, mockResHandler);
+      interceptor.onResponse(response, mockResHandler);
 
-      expect(response.data['data'], {'result': 'success'});
+      expect(response.data?['data'], {'result': 'success'});
       verify(() => mockEncryptionManager.decrypt('encrypted_response')).called(1);
       verify(() => mockResHandler.next(response)).called(1);
     });

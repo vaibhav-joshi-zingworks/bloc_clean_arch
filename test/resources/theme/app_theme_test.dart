@@ -1,5 +1,5 @@
-import 'package:bloc_clean_arch/resources/theme/theme.dart';
 import 'package:bloc_clean_arch/resources/theme/app_color_palette.dart';
+import 'package:bloc_clean_arch/resources/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

@@ -1,4 +1,3 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../../core.dart';
 import '../../domain/entity/user_entity.dart';
 

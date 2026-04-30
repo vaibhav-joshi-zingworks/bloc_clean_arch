@@ -1,4 +1,3 @@
-import 'package:bloc_clean_arch/core/failure/app_exception.dart';
 import 'package:bloc_clean_arch/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:bloc_clean_arch/features/auth/data/models/user_model.dart';
 import 'package:bloc_clean_arch/features/auth/data/repository/auth_repository_impl.dart';

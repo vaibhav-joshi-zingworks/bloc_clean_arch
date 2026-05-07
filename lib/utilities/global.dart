@@ -1,16 +1,25 @@
 import '../core.dart';
 
-/// Holds global [GlobalKey] instances used for app-wide navigation and messaging.
+/// Global access point for key Flutter framework controllers.
 /// 
-/// These keys allow performing actions (like navigation or showing snackbars) 
-/// from outside the widget tree where a [BuildContext] might not be available.
+/// This class provides static access to [GlobalKey] instances that are necessary 
+/// for performing imperative actions (like navigation or showing snackbars) 
+/// from deep within the business logic (BLoCs/Repositories) where a 
+/// [BuildContext] might not be readily available.
 class Global {
+  // Private constructor to prevent instantiation.
   Global._();
   
-  /// Key for the primary [Navigator] used by [GoRouter].
+  /// A global key for the [NavigatorState], used primarily by [GoRouter].
+  /// 
+  /// This key allows the application to perform navigation actions from 
+  /// anywhere in the code.
   static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   
-  /// Key for the [ScaffoldMessenger] to display [SnackBar]s globally.
+  /// A global key for [ScaffoldMessengerState], used to manage [SnackBar]s.
+  /// 
+  /// This key enables showing or hiding snackbars globally without needing 
+  /// access to a local [ScaffoldMessenger] via context.
   static final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
 }

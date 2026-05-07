@@ -1,9 +1,15 @@
 import '../core.dart';
 
-/// A collection of static utility methods for common UI and logic tasks.
+/// A utility class containing static helper methods for UI-related tasks.
+/// 
+/// The [Utils] class centralizes logic that is commonly used across different 
+/// parts of the application's presentation layer, such as color mapping and 
+/// global notification display.
 class Utils {
   
-  /// Returns the appropriate [Color] for a specific [MessageType].
+  /// Maps a [MessageType] enum to its corresponding [Color] from the theme palette.
+  /// 
+  /// [result] - The type of message (error, success, etc.) to get the color for.
   static Color getColor(MessageType result) {
     switch (result) {
       case MessageType.error:
@@ -19,16 +25,22 @@ class Utils {
     }
   }
 
-  /// Displays a highly-customizable [SnackBar] using the global [ScaffoldMessenger].
+  /// Displays a standardized [SnackBar] across the application.
   /// 
-  /// [message] is the body text.
-  /// [titleText] is an optional headline.
-  /// [result] determines the color scheme and icon.
+  /// This method uses the [Global.scaffoldMessengerKey] to ensure that 
+  /// notifications can be triggered from anywhere, including BLoCs or 
+  /// services, without requiring a [BuildContext].
+  /// 
+  /// * [message]: The primary content of the snackbar.
+  /// * [titleText]: An optional bold header for the snackbar.
+  /// * [result]: The [MessageType] which controls the background color and icon.
+  /// * [duration]: How long (in seconds) the snackbar remains visible.
   static void snackBar(String message,
       {String? titleText,
       MessageType result = MessageType.general,
       int duration = 2}) {
-    // Access the global messenger state
+    
+    // Retrieve the current messenger state from the global key
     final messenger = Global.scaffoldMessengerKey.currentState;
 
     if (messenger == null) return;
@@ -37,7 +49,7 @@ class Utils {
     Color iconColor = AppColorPalette.white;
     Color textColor = AppColorPalette.white;
 
-    // Select icon based on the message type
+    // Determine the icon based on the message type
     switch (result) {
       case MessageType.error:
         iconData = Icons.error;
@@ -56,6 +68,7 @@ class Utils {
         break;
     }
 
+    // Construct the customized SnackBar widget
     final snackBar = SnackBar(
       elevation: 0,
       behavior: SnackBarBehavior.floating,
@@ -83,7 +96,7 @@ class Utils {
       ),
     );
 
-    // Clear existing snackbars and show the new one
+    // Clear any active snackbars before showing the new one
     messenger
       ..clearSnackBars()
       ..showSnackBar(snackBar);

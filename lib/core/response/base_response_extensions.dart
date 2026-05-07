@@ -1,10 +1,13 @@
 import '../../core.dart';
 
-/// ================= FUTURE EXTENSIONS =================
+// --- Future Extensions ---
+// These extensions simplify the transformation of Future API responses 
+// directly into Domain Entities without manually uncurrying the Either types.
 
 extension ApiFutureEitherX<T>
 on Future<Either<AppException, BaseResponse<T>>> {
 
+  /// Maps a [BaseResponse] data payload to a Domain Entity [R].
   Future<Either<AppException, R>> mapEntity<R>(
       R Function(T data) mapper,
       ) async {
@@ -22,6 +25,7 @@ on Future<Either<AppException, BaseResponse<T>>> {
     );
   }
 
+  /// Maps a [BaseResponse] to a simple [ResultMessage].
   Future<Either<AppException, ResultMessage>> mapMessage() async {
     final either = await this;
 
@@ -37,6 +41,7 @@ on Future<Either<AppException, BaseResponse<T>>> {
 extension ApiFutureEitherPaginatedX<T>
 on Future<Either<AppException, BaseResponse<PaginatedResult<T>>>> {
 
+  /// Maps a list of DTOs within a [PaginatedResult] to a list of Domain Entities [R].
   Future<Either<AppException, PaginatedResult<R>>> mapPaginated<R>(
       R Function(T data) mapper,
       ) async {
@@ -68,6 +73,7 @@ on Future<Either<AppException, BaseResponse<PaginatedResult<T>>>> {
 extension ApiFutureEitherResultX<T>
 on Future<Either<AppException, BaseResponse<T>>> {
 
+  /// Maps a [BaseResponse] to a [Result] object, allowing for null data with a success message.
   Future<Either<AppException, Result<R>>> mapResult<R>(
       R Function(T data) mapper,
       ) async {
@@ -98,9 +104,11 @@ on Future<Either<AppException, BaseResponse<T>>> {
   }
 }
 
-/// ================= EITHER EXTENSIONS =================
+// --- Sync Either Extensions ---
 
 extension ApiEitherX<T> on Either<AppException, BaseResponse<T>> {
+  
+  /// Sync version of [mapEntity].
   Either<AppException, R> mapEntity<R>(
       R Function(T data) mapper,
       ) {
@@ -118,9 +126,11 @@ extension ApiEitherX<T> on Either<AppException, BaseResponse<T>> {
     );
   }
 }
+
 extension ApiEitherPaginatedX<T>
 on Either<AppException, BaseResponse<PaginatedResult<T>>> {
 
+  /// Sync version of [mapPaginated].
   Either<AppException, PaginatedResult<R>> mapPaginated<R>(
       R Function(T data) mapper,
       ) {

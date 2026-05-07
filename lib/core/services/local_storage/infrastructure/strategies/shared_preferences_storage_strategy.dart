@@ -1,5 +1,9 @@
 import '../../xcore.dart';
 
+/// Implementation of [StorageStrategy] using [SharedPreferences].
+/// 
+/// Used for storing non-sensitive data like user preferences, 
+/// theme settings, and app flags.
 class SharedPreferencesStorageStrategy implements StorageStrategy {
   final SharedPreferences _prefs;
 

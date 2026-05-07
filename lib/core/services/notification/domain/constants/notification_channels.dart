@@ -1,6 +1,11 @@
 import '/core.dart';
 
+/// Centralized configuration for all notification channels in the app.
+/// 
+/// Defines keys, names, importance, and rate-limiting cooldowns for each category.
 class NotificationChannels {
+  
+  /// A static map of all supported notification channels.
   static const Map<NotificationChannelType, NotificationChannelConfig> channels = {
     NotificationChannelType.general: NotificationChannelConfig(
       key: 'general',
@@ -15,7 +20,7 @@ class NotificationChannels {
       name: 'Marketing',
       description: 'Promotional notifications',
       importance: NotificationImportance.Default,
-      cooldownHours: 4,
+      cooldownHours: 4, // Prevents more than one marketing notification every 4 hours
     ),
 
     NotificationChannelType.transactions: NotificationChannelConfig(
@@ -37,7 +42,7 @@ class NotificationChannels {
     NotificationChannelType.progress: NotificationChannelConfig(
       key: 'progress',
       name: 'Progress',
-      description: 'Progress notifications',
+      description: 'Progress notifications (e.g. Downloads)',
       importance: NotificationImportance.Low,
       cooldownHours: 0,
     ),
@@ -59,6 +64,8 @@ class NotificationChannels {
     ),
   };
 
+  /// Converts the domain-level configurations into [NotificationChannel] objects 
+  /// required by the [AwesomeNotifications] plugin.
   static List<NotificationChannel> toAwesomeChannels() {
     return channels.values.map((config) {
       return NotificationChannel(
@@ -70,10 +77,12 @@ class NotificationChannels {
     }).toList();
   }
 
+  /// Returns the string key associated with a [NotificationChannelType].
   static String key(NotificationChannelType type) {
     return channels[type]!.key;
   }
 
+  /// Looks up the [cooldownHours] for a specific channel key string.
   static int cooldownForKey(String channelKey) {
     final channel = channels.values.firstWhere(
       (c) => c.key == channelKey,

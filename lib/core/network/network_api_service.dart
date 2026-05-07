@@ -1,11 +1,15 @@
-
 import '../../core.dart';
 
+/// Implementation of [BaseApiService] using the [Dio] package.
+/// 
+/// It centralizes the execution of network requests and handles 
+/// high-level mapping from raw responses to [BaseResponse] objects.
 class NetworkApiService implements BaseApiService {
   final Dio _dio;
 
   NetworkApiService(this._dio);
 
+  /// Private helper to execute requests and handle common error states.
   Future<Either<AppException, BaseResponse<T>>> _request<T>(
       Future<Response> Function() requestCall,
       ResponseMapper<T> mapper,
@@ -13,6 +17,7 @@ class NetworkApiService implements BaseApiService {
     try {
       final response = await requestCall();
 
+      // Trigger the parser to structure the JSON data
       final parsed = await Parser.parseBaseResponse<T>(
         response,
         mapper,
@@ -20,8 +25,10 @@ class NetworkApiService implements BaseApiService {
 
       return parsed;
     } on DioException catch (e) {
+      // Map technical Dio errors to domain AppException
       return Left(Failure.handleDioError(e));
     } catch (e) {
+      // Fallback for unexpected parsing or runtime errors
       return Left(ParsingError());
     }
   }

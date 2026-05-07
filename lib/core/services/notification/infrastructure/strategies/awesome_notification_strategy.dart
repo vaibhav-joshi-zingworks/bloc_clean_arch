@@ -1,5 +1,9 @@
 import '/core.dart';
 
+/// Implementation of [NotificationStrategy] using the [AwesomeNotifications] package.
+/// 
+/// This strategy coordinates with an adapter, a rate limiter, and a channel registry 
+/// to provide robust local notification features.
 class AwesomeNotificationStrategy implements NotificationStrategy {
   final NotificationRateLimitStrategy rateLimitStrategy;
   final AwesomeNotificationsAdapter adapter;
@@ -14,7 +18,7 @@ class AwesomeNotificationStrategy implements NotificationStrategy {
   Future<void> initialize() async {
     if (_initialized) return;
 
-    // Prevent multiple parallel initializations
+    // Thread-safe initialization: prevent multiple parallel setup calls
     if (_initializingFuture != null) {
       return _initializingFuture!;
     }
@@ -26,9 +30,12 @@ class AwesomeNotificationStrategy implements NotificationStrategy {
     _initializingFuture = null;
   }
 
+  /// Internal setup logic for the notification engine and listeners.
   Future<void> _performInitialization() async {
+    // 1. Initialize channels
     await adapter.initialize(channelRegistry.getChannels());
 
+    // 2. Set up global background/foreground event handlers
     adapter.setListeners(
       onAction: AwesomeNotificationEventHandler.onActionReceived,
       onCreated: AwesomeNotificationEventHandler.onCreated,
@@ -37,6 +44,8 @@ class AwesomeNotificationStrategy implements NotificationStrategy {
     );
 
     if (kIsWeb) return;
+    
+    // 3. Request platform permissions if not already granted
     if (Platform.isAndroid || Platform.isIOS) {
       final allowed = await adapter.isAllowed();
       if (!allowed) {
@@ -59,6 +68,7 @@ class AwesomeNotificationStrategy implements NotificationStrategy {
   }) async {
     await initialize();
 
+    // Check rate limit before showing to avoid spamming the user
     if (!await rateLimitStrategy.canSend(channelKey)) return;
 
     await adapter.create(
@@ -70,6 +80,7 @@ class AwesomeNotificationStrategy implements NotificationStrategy {
         groupKey: groupKey,
         bigPicture: bigPicture,
         notificationLayout: layout ?? NotificationLayout.Default,
+        // The 'route' is passed in the payload for navigation when tapped
         payload: route != null ? {"route": route} : null,
         progress: progress,
       ),
@@ -92,6 +103,7 @@ class AwesomeNotificationStrategy implements NotificationStrategy {
 
     await adapter.create(
       NotificationContent(id: id, channelKey: channelKey, title: title, body: body, payload: route != null ? {"route": route} : null),
+      // Precise alarm triggers exactly at the given date/time
       schedule: NotificationCalendar.fromDate(date: scheduledDate, preciseAlarm: true),
     );
     await rateLimitStrategy.markSent(channelKey);
@@ -107,6 +119,7 @@ class AwesomeNotificationStrategy implements NotificationStrategy {
   }) async {
     await initialize();
     if (!await rateLimitStrategy.canSend(channelKey)) return;
+    
     await adapter.create(
       NotificationContent(
         id: id,
@@ -147,6 +160,7 @@ class AwesomeNotificationStrategy implements NotificationStrategy {
 
     if (!await rateLimitStrategy.canSend(channelKey)) return;
 
+    // Detailed messaging layout with reply buttons and avatars
     await adapter.create(
       NotificationContent(
         id: id,
@@ -159,6 +173,7 @@ class AwesomeNotificationStrategy implements NotificationStrategy {
         notificationLayout: chatType == ChatType.group ? NotificationLayout.MessagingGroup : NotificationLayout.Messaging,
       ),
       actionButtons: [
+        // Allow direct reply from the notification drawer
         NotificationActionButton(key: 'REPLY', label: 'Reply', requireInputText: true),
         NotificationActionButton(key: 'MARK_READ', label: 'Mark as Read', actionType: ActionType.DismissAction),
       ],

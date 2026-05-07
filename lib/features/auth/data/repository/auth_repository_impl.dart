@@ -5,8 +5,13 @@ import 'package:dartz/dartz.dart';
 
 import '../datasources/auth_remote_data_source.dart';
 
+/// Concrete implementation of [AuthRepository].
+/// 
+/// It acts as the single source of truth for the domain layer,
+/// coordinating between remote and local data sources.
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
+  
   AuthRepositoryImpl({required this.remoteDataSource});
 
   @override
@@ -15,14 +20,17 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
   }) async {
     try {
+      // Execute the remote login request
       final user = await remoteDataSource.login(
         email: email,
         password: password,
       );
+      
+      // Return the successfully mapped user entity
       return Right(user);
     } catch (e) {
+      // Handle data-layer errors and convert them to domain exceptions
       return Left(AppException(500, e.toString()));
     }
   }
-
 }

@@ -1,5 +1,10 @@
 import '../../../core.dart';
 
+/// Service responsible for preventing screenshots and screen recordings.
+/// 
+/// It uses a reference-counting mechanism to ensure that protection is only 
+/// disabled when all parts of the app that requested it have released it.
+/// Critical for protecting sensitive data like PINs, KYC info, or bank details.
 class ScreenshotScreenRecordingProtectionService {
   ScreenshotScreenRecordingProtectionService._internal();
 
@@ -7,14 +12,22 @@ class ScreenshotScreenRecordingProtectionService {
 
   factory ScreenshotScreenRecordingProtectionService() => _instance;
 
+  /// Tracks how many active components are requesting protection.
   int _protectionRefCount = 0;
 
+  /// Internal state to track if protection is currently active.
   bool _isProtected = false;
 
+  /// Tracks if the Android 'FLAG_SECURE' was successfully set via MethodChannel.
   bool _didSetFlagSecure = false;
 
+  /// Public getter to check protection status.
   bool get isProtected => _isProtected;
 
+  /// Enables protection with various optional UI masking effects.
+  /// 
+  /// On Android, it attempts to set [FLAG_SECURE] to block system-level screenshots.
+  /// On iOS, it uses [ScreenProtector] to mask the app switcher or recording.
   Future<void> enableProtection({
     bool protectDataLeakageWithBlur = false,
     String? placeholderImageAssetName,
@@ -32,6 +45,7 @@ class ScreenshotScreenRecordingProtectionService {
     try {
       await ScreenProtector.preventScreenshotOn();
 
+      // Configure masking behavior when the app is in background or being recorded
       if (protectDataLeakageWithBlur) {
         try {
           await ScreenProtector.protectDataLeakageWithBlur();
@@ -50,15 +64,9 @@ class ScreenshotScreenRecordingProtectionService {
         } catch (e) {
           debugPrint('protectDataLeakageWithImage failed: $e');
         }
-      } else {
-        try {
-          ///Todo: add fallback image
-          // await ScreenProtector.protectDataLeakageWithImage(Assets.images.logoWebp.path);
-        } catch (e) {
-          debugPrint('protectDataLeakageWithImage (fallback) failed: $e');
-        }
       }
 
+      // Android-specific: Enable secure flag via platform channel
       if (Platform.isAndroid) {
         try {
           final ok = await _PlatformSecure.enableFlagSecure();
@@ -78,6 +86,7 @@ class ScreenshotScreenRecordingProtectionService {
     }
   }
 
+  /// Decreases the reference count and disables protection if no more components need it.
   Future<void> disableProtection() async {
     if (!(Platform.isAndroid || Platform.isIOS)) return;
 
@@ -90,6 +99,7 @@ class ScreenshotScreenRecordingProtectionService {
     _protectionRefCount--;
     debugPrint('Protection refCount decreased: $_protectionRefCount');
 
+    // Only disable if this was the last reference
     if (_protectionRefCount > 0) {
       return;
     }
@@ -97,6 +107,7 @@ class ScreenshotScreenRecordingProtectionService {
     try {
       await ScreenProtector.preventScreenshotOff();
 
+      // Clear all UI masking effects
       try {
         await ScreenProtector.protectDataLeakageWithColorOff();
       } catch (_) {}
@@ -104,6 +115,7 @@ class ScreenshotScreenRecordingProtectionService {
         await ScreenProtector.protectDataLeakageWithBlurOff();
       } catch (_) {}
 
+      // Android-specific: Disable secure flag
       if (Platform.isAndroid && _didSetFlagSecure) {
         try {
           final ok = await _PlatformSecure.disableFlagSecure();
@@ -121,6 +133,7 @@ class ScreenshotScreenRecordingProtectionService {
     }
   }
 
+  /// Checks if the screen is currently being recorded (iOS only).
   Future<bool> isRecording() async {
     try {
       if (!Platform.isIOS) return false;
@@ -132,6 +145,7 @@ class ScreenshotScreenRecordingProtectionService {
   }
 }
 
+/// Private helper to communicate with native platform for Android Secure Flags.
 class _PlatformSecure {
   static const MethodChannel _channel = MethodChannel('com.swipeloan.screen_protect');
 

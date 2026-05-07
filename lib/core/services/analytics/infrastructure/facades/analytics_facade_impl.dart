@@ -1,6 +1,11 @@
 import '../../../../../core.dart';
 
+/// Concrete implementation of [AnalyticsFacade].
+/// 
+/// It uses the Strategy pattern to delegate analytics operations to a specific
+/// [AnalyticsStrategy] implementation.
 class AnalyticsFacadeImpl implements AnalyticsFacade{
+  /// The active strategy used for logging analytics.
   final AnalyticsStrategy strategy;
 
   AnalyticsFacadeImpl(this.strategy);

@@ -5,6 +5,9 @@ import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
 
+/// The login screen of the application.
+/// 
+/// It captures user credentials and triggers the authentication flow via the [AuthBloc].
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -23,6 +26,7 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+  /// Dispatches the login event to the Bloc.
   void _onLogin() {
     context.read<AuthBloc>().add(
       AuthLoginRequested(
@@ -39,14 +43,15 @@ class _LoginPageState extends State<LoginPage> {
 
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
+          // React to failure state by showing a SnackBar
           if (state is AuthFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.appException.message)),
             );
           }
 
+          // React to success state (e.g., navigation)
           if (state is AuthSuccess) {
-            // Navigate to home or dashboard
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Welcome ${state.user.name}')),
             );

@@ -3,7 +3,10 @@ import 'package:bloc_clean_arch/features/auth/domain/entity/user_entity.dart';
 import '../../../../core.dart';
 import '../repository/auth_repository.dart';
 
-class LoginUseCase implements UseCase<UserEntity,LoginParams> {
+/// Use case for performing user login.
+/// 
+/// Orchestrates the login process by calling the [AuthRepository].
+class LoginUseCase implements UseCase<UserEntity, LoginParams> {
   final AuthRepository repository;
 
   LoginUseCase({
@@ -16,9 +19,11 @@ class LoginUseCase implements UseCase<UserEntity,LoginParams> {
   }
 }
 
+/// Parameters required to execute the [LoginUseCase].
 class LoginParams {
   final String email;
   final String password;
+  
   LoginParams({
     required this.email,
     required this.password,

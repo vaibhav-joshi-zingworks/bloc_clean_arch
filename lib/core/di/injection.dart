@@ -20,8 +20,12 @@ import '../services/app_device_info/infrastructure/services/flutter_brightness_p
 import '../services/encryption/xcore.dart';
 import 'injection.config.dart';
 
+/// Service Locator instance (GetIt).
 final sl = GetIt.instance;
 
+/// Global initialization for dependency injection.
+/// 
+/// This function triggers the generated [init] method from injectable.
 @InjectableInit(
   initializerName: 'init',
   preferRelativeImports: true,
@@ -29,8 +33,12 @@ final sl = GetIt.instance;
 )
 Future<void> initDependencies() async => sl.init();
 
+/// Module for registering external dependencies and project-wide services.
 @module
 abstract class InjectionModule {
+  
+  // --- Core Services ---
+  
   @preResolve
   Future<SharedPreferences> get sharedPreferences =>
       SharedPreferences.getInstance();
@@ -41,13 +49,17 @@ abstract class InjectionModule {
   @lazySingleton
   Connectivity get connectivity => Connectivity();
 
-  // @lazySingleton
-  // AnalyticsFactory analyticsFactory() => DefaultAnalyticsFactory();
+  // --- Analytics ---
+  
+  @lazySingleton
+  AnalyticsFactory analyticsFactory() => DefaultAnalyticsFactory();
 
-  // @lazySingleton
-  // AnalyticsFacade analyticsFacade(AnalyticsFactory factory) =>
-  //     AnalyticsFacadeImpl(factory.create(AnalyticsType.firebase));
+  @lazySingleton
+  AnalyticsFacade analyticsFacade(AnalyticsFactory factory) =>
+      AnalyticsFacadeImpl(factory.create(AnalyticsType.firebase));
 
+  // --- Storage Strategies ---
+  
   @lazySingleton
   StorageStrategy storageStrategy(FlutterSecureStorage secureStorage) =>
       SecureStorageStrategy(secureStorage);
@@ -83,6 +95,8 @@ abstract class InjectionModule {
   @lazySingleton
   StorageStrategyFactory storageStrategyFactory() =>
       DefaultStorageStrategyFactory();
+
+  // --- Network & Security ---
 
   @lazySingleton
   EncryptionManager encryptionManager() => EncryptionManager(
@@ -132,6 +146,7 @@ abstract class InjectionModule {
   PayloadInterceptor payloadInterceptor(EncryptionManager encryptionManager) =>
       PayloadInterceptor(encryptionManager);
 
+  /// Configures the Dio instance with all necessary interceptors.
   @lazySingleton
   Dio dio(
     NetworkInterceptor networkInterceptor,
@@ -160,6 +175,8 @@ abstract class InjectionModule {
 
   @lazySingleton
   BaseApiService baseApiService(Dio dio) => NetworkApiService(dio);
+
+  // --- Device & System Services ---
 
   @preResolve
   Future<AppDeviceInfoService> appDeviceInfoService() async {
@@ -255,21 +272,13 @@ abstract class InjectionModule {
   @lazySingleton
   AppLifecycleService appLifecycleService() => AppLifecycleService();
 
+  // --- App Providers ---
+
   @singleton
   GlobalMessageCubit globalMessageCubit() => GlobalMessageCubit();
 
   @singleton
   LocaleCubit localeCubit() => LocaleCubit();
-  //
-  // @lazySingleton
-  // GoRouter router(AnalyticsFacade analyticsFacade) {
-  //   return AppRouter.createRouter(
-  //     observers: [
-  //       if (analyticsFacade.observer != null)
-  //         analyticsFacade.observer!,
-  //     ],
-  //   );
-  // }
 
   @lazySingleton
   GoRouter router() {
@@ -278,6 +287,9 @@ abstract class InjectionModule {
     );
   }
 
+  // --- Feature Specific Dependencies ---
+  
+  // Settings & Theme
   @lazySingleton
   ThemeLocalDataSource themeLocalDataSource(StorageFacade storage) =>
       ThemeLocalDataSource(storage);
@@ -305,6 +317,7 @@ abstract class InjectionModule {
   ) =>
       ThemeCubit(loadThemeModeUseCase, saveThemeModeUseCase,brightnessProvider);
 
+  // Splash
   @lazySingleton
   SplashLocalDataSource splashLocalDataSource(StorageFacade storage) =>
       SplashLocalDataSource(storage);
@@ -317,12 +330,15 @@ abstract class InjectionModule {
   GetAppStatusUseCase getAppStatusUseCase(SplashRepository repository) =>
       GetAppStatusUseCase(repository);
 
+  // Authentication
   @injectable
   AuthBloc authBloc(LoginUseCase loginUseCase) =>
       AuthBloc(loginUseCase: loginUseCase);
+  
   @lazySingleton
   LoginUseCase loginUseCase(AuthRepository repository) =>
       LoginUseCase(repository: repository);
+
   @lazySingleton
   AuthRepository authRepository(AuthRemoteDataSource remote) =>
       AuthRepositoryImpl(remoteDataSource: remote);

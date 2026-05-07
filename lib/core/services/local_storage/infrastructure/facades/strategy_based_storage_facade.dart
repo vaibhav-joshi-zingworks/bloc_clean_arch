@@ -1,5 +1,9 @@
 import '../../xcore.dart';
 
+/// Implementation of [StorageFacade] that delegates operations to a [StorageStrategy].
+/// 
+/// This allows for switching the underlying storage mechanism (e.g., from 
+/// SharedPreferences to SecureStorage) by simply providing a different strategy.
 class StrategyBasedStorageFacade implements StorageFacade {
   final StorageStrategy _strategy;
 

@@ -1,5 +1,6 @@
 import '../../xcore.dart';
 
+/// Strategy for launching standard web links (http/https).
 class WebUrlLaunchStrategy implements UrlLaunchStrategy {
   @override
   bool supports(Uri uri) {
@@ -8,6 +9,7 @@ class WebUrlLaunchStrategy implements UrlLaunchStrategy {
 
   @override
   Future<bool> launch(Uri uri, {LaunchMode? mode}) {
+    // Defaults to opening in an external browser for better user experience
     return launchUrl(uri, mode: mode ?? LaunchMode.externalApplication);
   }
 }

@@ -1,24 +1,31 @@
 import '../../core.dart';
 
+/// Centralized theme configuration for the application.
+/// 
+/// Provides both [light] and [dark] theme definitions following Material 3 guidelines.
 class AppTheme {
+  /// Default font family used throughout the app.
   static const String _font = FontFamily.flink;
 
-  /// Common radius
+  // Standard corner radii for UI components
   static const double _radiusSmall = 6;
   static const double _radiusMedium = 12;
   static const double _radiusLarge = 16;
 
+  /// Returns the Light Theme configuration.
   static ThemeData get light => _buildTheme(Brightness.light);
 
+  /// Returns the Dark Theme configuration.
   static ThemeData get dark => _buildTheme(Brightness.dark);
 
+  /// Internal builder to generate [ThemeData] based on [Brightness].
   static ThemeData _buildTheme(Brightness brightness) {
     final isLight = brightness == Brightness.light;
 
-    /// Base Color Theme
+    /// Base Color Theme generated from the primary brand color.
     final baseScheme = ColorScheme.fromSeed(seedColor: AppColorPalette.primary, brightness: brightness);
 
-    /// Creates theme on the basis of base scheme
+    /// Customizes the color scheme for branding and specific UI states.
     final colorScheme = baseScheme.copyWith(
       primary: AppColorPalette.primary,
       onPrimary: AppColorPalette.white,
@@ -33,7 +40,7 @@ class AppTheme {
       onSurfaceVariant: isLight ? AppColorPalette.grey : AppColorPalette.lightGrey,
     );
 
-    /// Text
+    /// Generates the typography theme.
     final textTheme = _createTextTheme(colorScheme);
 
     return ThemeData(
@@ -43,10 +50,10 @@ class AppTheme {
       colorScheme: colorScheme,
       textTheme: textTheme,
 
-      /// Scaffold
+      /// Scaffold background
       scaffoldBackgroundColor: colorScheme.surface,
 
-      /// APP BAR
+      /// AppBar Configuration
       appBarTheme: AppBarTheme(
         elevation: 0,
         centerTitle: true,
@@ -62,30 +69,30 @@ class AppTheme {
         ),
       ),
 
-      /// CARD
+      /// Card Appearance
       cardTheme: CardThemeData(
         color: colorScheme.surface,
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(_radiusSmall)),
       ),
 
-      /// DIALOG
+      /// Dialog Appearance
       dialogTheme: DialogThemeData(
         backgroundColor: colorScheme.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(_radiusMedium)),
       ),
 
-      /// SNACKBAR
+      /// SnackBar Appearance
       snackBarTheme: SnackBarThemeData(
         backgroundColor: colorScheme.inverseSurface,
         contentTextStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onInverseSurface),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(_radiusSmall)),
       ),
 
-      /// DIVIDER
+      /// Divider Appearance
       dividerTheme: DividerThemeData(color: colorScheme.outlineVariant, thickness: 1),
 
-      /// BUTTONS
+      /// Button Styles
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: colorScheme.primary,
@@ -117,7 +124,7 @@ class AppTheme {
         ),
       ),
 
-      /// INPUT FIELD
+      /// Input Field (TextField) Appearance
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: isLight ? AppColorPalette.white : const Color(0xFF1E1E1E),
@@ -141,7 +148,7 @@ class AppTheme {
         hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
       ),
 
-      /// CHECKBOX
+      /// Checkbox Appearance
       checkboxTheme: CheckboxThemeData(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
         fillColor: WidgetStateProperty.resolveWith((states) {
@@ -152,19 +159,19 @@ class AppTheme {
         }),
       ),
 
-      /// SWITCH
+      /// Switch Appearance
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.all(colorScheme.primary),
         trackColor: WidgetStateProperty.all(colorScheme.primary.withValues(alpha: 0.4)),
       ),
 
-      /// RADIO
+      /// Radio Button Appearance
       radioTheme: RadioThemeData(fillColor: WidgetStateProperty.all(colorScheme.primary)),
 
-      /// LIST TILE
+      /// ListTile Appearance
       listTileTheme: ListTileThemeData(iconColor: colorScheme.onSurface, textColor: colorScheme.onSurface),
 
-      /// BOTTOM NAVIGATION
+      /// Bottom Navigation Bar Appearance
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: colorScheme.surface,
         selectedItemColor: colorScheme.primary,
@@ -173,10 +180,10 @@ class AppTheme {
         unselectedLabelStyle: textTheme.labelSmall,
       ),
 
-      /// PROGRESS INDICATOR
+      /// Progress Indicator Appearance
       progressIndicatorTheme: ProgressIndicatorThemeData(color: colorScheme.primary),
 
-      /// TEXT SELECTION
+      /// Text Selection Colors
       textSelectionTheme: TextSelectionThemeData(
         cursorColor: colorScheme.primary,
         selectionColor: colorScheme.primary.withValues(alpha: 0.3),
@@ -185,6 +192,7 @@ class AppTheme {
     );
   }
 
+  /// Creates a [TextTheme] that adapts to the [ColorScheme].
   static TextTheme _createTextTheme(ColorScheme colorScheme) {
     return TextTheme(
       displayLarge: _baseStyle(32, colorScheme.onSurface),
@@ -209,6 +217,7 @@ class AppTheme {
     );
   }
 
+  /// Utility to create a [TextStyle] with consistent font and weight.
   static TextStyle _baseStyle(double size, Color color, [FontWeight weight = FontWeight.w400]) {
     return TextStyle(fontFamily: _font, fontSize: size, fontWeight: weight, color: color);
   }

@@ -121,10 +121,12 @@
 //   }
 // }
 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'app/app_bloc_observer.dart';
 import 'app/view/app.dart';
 import 'core.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 void logEnv() {
   debugPrint('🚀 ===== ENV CONFIG =====');
@@ -138,6 +140,13 @@ void logEnv() {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    await Firebase.initializeApp();
+  } catch (e, st) {
+    debugPrint('Firebase.initializeApp failed: $e');
+    debugPrint('$st');
+  }
 
   await initDependencies();
 

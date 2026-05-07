@@ -1,9 +1,15 @@
 import 'package:http_certificate_pinning/http_certificate_pinning.dart';
-
 import '../../../core.dart';
 
+/// A utility class to transform technical errors into domain-level exceptions.
+/// 
+/// It centralizes error handling logic for the entire networking layer.
 class Failure {
-  /// Maps DioException → AppException (Domain-safe)
+  
+  /// Maps [DioException] to a corresponding [AppException].
+  /// 
+  /// This ensures that the rest of the app only deals with [AppException] 
+  /// and is shielded from the underlying networking library details.
   static AppException handleDioError(DioException e) {
     switch (e.type) {
       case DioExceptionType.connectionTimeout:
@@ -28,7 +34,7 @@ class Failure {
     }
   }
 
-  /// Handles non-2xx HTTP responses
+  /// Handles responses with non-2xx status codes.
   static AppException _handleBadResponse(DioException e) {
     final response = e.response;
     if (response == null) return UnknownError();
@@ -87,7 +93,7 @@ class Failure {
     }
   }
 
-  /// Handles DioExceptionType.unknown
+  /// Handles low-level errors caught by Dio (e.g., SocketExceptions).
   static AppException _handleUnknownError(DioException e) {
     final error = e.error;
 
@@ -105,7 +111,9 @@ class Failure {
     return UnknownError();
   }
 
-  /// Safely extracts message from API response
+  /// Safely extracts a message from the API response body.
+  /// 
+  /// Looks for common keys like 'message' or 'error'.
   static String _extractMessage(Response response) {
     final data = response.data;
 
@@ -116,7 +124,7 @@ class Failure {
     return response.statusMessage ?? 'Something went wrong';
   }
 
-  /// Detects token expiry (fintech-critical)
+  /// Detects if a 401 response specifically indicates a token expiry.
   static bool _isTokenExpired(Response response) {
     final data = response.data;
 

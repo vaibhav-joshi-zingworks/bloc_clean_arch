@@ -1,3 +1,7 @@
+/// Barrel file for all core infrastructure services.
+/// 
+/// Consolidates all service sub-modules (Analytics, Storage, Security, etc.) 
+/// for easier access throughout the project.
 export 'analytics/xcore.dart';
 export 'app_device_info/xcore.dart';
 export 'app_lifecycle_service/app_lifecycle_service.dart';

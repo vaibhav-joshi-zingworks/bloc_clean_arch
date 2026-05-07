@@ -1,5 +1,9 @@
 import '../../xcore.dart';
 
+/// Implementation of [StorageStrategy] using [FlutterSecureStorage].
+/// 
+/// Ideal for storing sensitive information like authentication tokens
+/// and private user data that needs to be encrypted at rest.
 class SecureStorageStrategy implements StorageStrategy {
   final FlutterSecureStorage _secureStorage;
 

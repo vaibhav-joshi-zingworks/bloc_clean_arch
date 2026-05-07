@@ -1,3 +1,7 @@
+/// Barrel file for the URL Launcher service.
+/// 
+/// Consolidates all URL launching logic, including domain interfaces, 
+/// infrastructure strategies, and factories.
 export 'package:url_launcher/url_launcher.dart';
 
 export 'domain/config/launch_mode_config.dart';

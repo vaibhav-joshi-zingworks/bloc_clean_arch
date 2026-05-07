@@ -2,9 +2,12 @@ import 'dart:async';
 
 import '../../../../../core.dart';
 
+/// Implementation of [AnalyticsStrategy] specifically for Firebase Analytics.
 class FirebaseAnalyticsStrategy implements AnalyticsStrategy {
+  /// The Firebase Analytics instance.
   final FirebaseAnalytics analytics;
 
+  /// Tracks if the analytics provider has been initialized.
   bool _initialized = false;
 
   FirebaseAnalyticsStrategy(this.analytics);
@@ -17,8 +20,10 @@ class FirebaseAnalyticsStrategy implements AnalyticsStrategy {
     if (_initialized) return;
 
     try {
+      // Toggle analytics collection based on user consent or app config
       await analytics.setAnalyticsCollectionEnabled(isEnabled);
       _initialized = true;
+      // Log an automatic app open event
       analytics.logAppOpen();
     } catch (e, stack) {
       _logError('init', e, stack);
@@ -55,6 +60,7 @@ class FirebaseAnalyticsStrategy implements AnalyticsStrategy {
     }
   }
 
+  /// Internal error logger for analytics failures.
   void _logError(String method, Object error, StackTrace stack) {
     logError('[FirebaseAnalyticsStrategy][$method] $error');
   }

@@ -1,28 +1,26 @@
 import '../xcore.dart';
 
+/// Factory for creating [IEncryptionStrategy] instances based on [EncryptionType].
 class EncryptionStrategyFactory {
+  /// Creates and configures an encryption strategy.
   static IEncryptionStrategy create({
     required EncryptionType type,
     required String key,
-    String? privateKey, // for RSA
+    String? privateKey, // Required if using RSA
     AESMode? aesMode,
     String? padding,
   }) {
     switch (type) {
       case EncryptionType.aes:
-        // If callers pass `padding: null`, keep the strategy's own default ('PKCS7')
-        // instead of disabling padding completely.
+        // Returns the AES implementation with provided or default configuration
         return AesEncryptionStrategy(
           key,
           mode: aesMode ?? AESMode.cbc,
           padding: padding ?? 'PKCS7',
         );
-    // case EncryptionType.rsa:
-    //   if (privateKey == null) throw ArgumentError('Private key required for RSA');
-    //   return RsaEncryptionStrategy(key, privateKey);
       case EncryptionType.rsa:
-      // TODO: Handle this case.
-        throw UnimplementedError();
+        // RSA implementation placeholder
+        throw UnimplementedError('RSA encryption is not yet implemented');
     }
   }
 }

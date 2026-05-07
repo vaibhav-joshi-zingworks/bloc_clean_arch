@@ -61,6 +61,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i943.FlutterSecureStorage>(
         () => injectionModule.secureStorage);
     gh.lazySingleton<_i943.Connectivity>(() => injectionModule.connectivity);
+    gh.lazySingleton<_i943.AnalyticsFactory>(
+        () => injectionModule.analyticsFactory());
     gh.lazySingleton<_i943.StorageStrategyFactory>(
         () => injectionModule.storageStrategyFactory());
     gh.lazySingleton<_i0.EncryptionManager>(
@@ -124,6 +126,8 @@ extension GetItInjectableX on _i174.GetIt {
         .deviceSecurityRepository(gh<_i943.SafeDeviceAdapter>()));
     gh.lazySingleton<_i943.NotificationRateLimitStrategy>(() => injectionModule
         .notificationRateLimitStrategy(gh<_i943.NotificationRepository>()));
+    gh.lazySingleton<_i943.AnalyticsFacade>(
+        () => injectionModule.analyticsFacade(gh<_i943.AnalyticsFactory>()));
     gh.lazySingleton<_i943.AuthInterceptor>(
         () => injectionModule.authInterceptor(gh<_i943.StorageFacade>()));
     gh.lazySingleton<_i943.PermissionStrategyFactory>(() => injectionModule

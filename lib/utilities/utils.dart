@@ -1,6 +1,9 @@
 import '../core.dart';
 
+/// A collection of static utility methods for common UI and logic tasks.
 class Utils {
+  
+  /// Returns the appropriate [Color] for a specific [MessageType].
   static Color getColor(MessageType result) {
     switch (result) {
       case MessageType.error:
@@ -16,10 +19,16 @@ class Utils {
     }
   }
 
+  /// Displays a highly-customizable [SnackBar] using the global [ScaffoldMessenger].
+  /// 
+  /// [message] is the body text.
+  /// [titleText] is an optional headline.
+  /// [result] determines the color scheme and icon.
   static void snackBar(String message,
       {String? titleText,
       MessageType result = MessageType.general,
       int duration = 2}) {
+    // Access the global messenger state
     final messenger = Global.scaffoldMessengerKey.currentState;
 
     if (messenger == null) return;
@@ -28,6 +37,7 @@ class Utils {
     Color iconColor = AppColorPalette.white;
     Color textColor = AppColorPalette.white;
 
+    // Select icon based on the message type
     switch (result) {
       case MessageType.error:
         iconData = Icons.error;
@@ -51,7 +61,7 @@ class Utils {
       behavior: SnackBarBehavior.floating,
       backgroundColor: getColor(result),
       duration: Duration(seconds: duration),
-      margin: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       padding: EdgeInsets.zero,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
       content: ListTile(
@@ -59,7 +69,6 @@ class Utils {
         horizontalTitleGap: 10,
         leading: Icon(iconData, size: 25, color: iconColor),
         title: titleText == null
-            // ? AppTextWidget(text: message, fontSize: 12, color: textColor)
             ? Text(message, style: TextStyle(color: textColor, fontSize: 12))
             : Text(titleText,
                 style: TextStyle(
@@ -70,10 +79,11 @@ class Utils {
             ? null
             : Text(message, style: TextStyle(color: textColor, fontSize: 12)),
         dense: true,
-        contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
       ),
     );
 
+    // Clear existing snackbars and show the new one
     messenger
       ..clearSnackBars()
       ..showSnackBar(snackBar);

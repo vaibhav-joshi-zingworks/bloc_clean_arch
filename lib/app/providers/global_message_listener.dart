@@ -3,9 +3,14 @@ import 'package:bloc_clean_arch/app/xcore.dart';
 import 'package:bloc_clean_arch/core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+/// A wrapper widget that listens for global messages and displays them as SnackBars.
+/// 
+/// This should be placed high in the widget tree (usually in [App.builder]).
 class GlobalMessageListener extends StatelessWidget {
 
   const GlobalMessageListener({super.key, required this.child});
+  
+  /// The underlying widget tree.
   final Widget child;
 
   @override
@@ -15,6 +20,7 @@ class GlobalMessageListener extends StatelessWidget {
       listener: (context, message) {
         if (message == null) return;
 
+        // Map the MessageType to the appropriate UI snackbar/toast
         switch (message.type) {
           case MessageType.success:
             Utils.snackBar(message.message, result: MessageType.success);
@@ -37,6 +43,7 @@ class GlobalMessageListener extends StatelessWidget {
             break;
         }
 
+        // Auto-clear the state after showing to avoid duplicate triggers
         sl<GlobalMessageCubit>().clear();
       },
       child: child,

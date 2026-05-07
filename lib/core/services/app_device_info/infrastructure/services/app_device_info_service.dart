@@ -4,6 +4,10 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '/core.dart';
 
+/// Service implementation of [DeviceInfoRepository] that gathers system information.
+/// 
+/// It collects package info, device hardware details, network status, and 
+/// unique identifiers to build a comprehensive [AppDeviceInfoModel].
 class AppDeviceInfoService implements DeviceInfoRepository {
   AppDeviceInfoService._internal();
   static final AppDeviceInfoService _instance = AppDeviceInfoService._internal();
@@ -28,6 +32,7 @@ class AppDeviceInfoService implements DeviceInfoRepository {
     _adapter = adapter ?? DefaultDeviceInfoAdapter(_deviceInfoPlugin!);
 
     try {
+      // Gather all required platform info in parallel
       final results = await Future.wait([
         PackageInfo.fromPlatform(),
         _adapter.getDeviceId(),
@@ -44,8 +49,10 @@ class AppDeviceInfoService implements DeviceInfoRepository {
       if (Platform.isAndroid) _android = results[4] as AndroidDeviceInfo;
       if (Platform.isIOS) _ios = results[4] as IosDeviceInfo;
 
+      // Construct a standard User-Agent string for the app
       final userAgent = _adapter.getUserAgent(_packageInfo!, _android, _ios);
 
+      // Build and cache the domain model
       deviceInfo = _buildDeviceInfoModel(deviceId: deviceId, ip: ip, networkType: networkType, userAgent: userAgent);
 
       _initialized = true;
@@ -56,6 +63,7 @@ class AppDeviceInfoService implements DeviceInfoRepository {
     }
   }
 
+  /// Maps native device and package data into the cross-platform [AppDeviceInfoModel].
   AppDeviceInfoModel? _buildDeviceInfoModel({
     required String deviceId,
     required String ip,
@@ -103,6 +111,7 @@ class AppDeviceInfoService implements DeviceInfoRepository {
     }
   }
 
+  /// Helper to get a standardized platform string.
   String _getPlatform() {
     switch (Platform.operatingSystem) {
       case 'android':

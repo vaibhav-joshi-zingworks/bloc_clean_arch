@@ -39,7 +39,7 @@ extension FlavorExtension on Flavor {
       case 'prod':
         return Flavor.prod;
       default:
-        throw throw Exception('Invalid flavor');
+        throw Exception('Invalid flavor');
     }
   }
 }

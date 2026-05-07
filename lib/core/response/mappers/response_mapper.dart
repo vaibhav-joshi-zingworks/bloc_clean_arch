@@ -1,10 +1,13 @@
 
 import '../../../core.dart';
 
+/// Abstract base class for mapping dynamic JSON data into structured objects.
 abstract class ResponseMapper<T> {
+  /// Transforms the input [json] into an instance of [T].
   T fromJson(dynamic json);
 }
 
+/// Mapper for a single object.
 class ObjectMapper<T> extends ResponseMapper<T> {
   final T Function(Map<String, dynamic>) parser;
 
@@ -16,6 +19,7 @@ class ObjectMapper<T> extends ResponseMapper<T> {
   }
 }
 
+/// Mapper for a simple list of objects.
 class ListMapper<T> extends ResponseMapper<List<T>> {
   final T Function(Map<String, dynamic>) parser;
 
@@ -28,6 +32,7 @@ class ListMapper<T> extends ResponseMapper<List<T>> {
   }
 }
 
+/// Mapper for paginated list responses.
 class PaginatedMapper<T> extends ResponseMapper<PaginatedResult<T>> {
   final T Function(Map<String, dynamic>) parser;
   PaginatedMapper(this.parser);
@@ -39,6 +44,7 @@ class PaginatedMapper<T> extends ResponseMapper<PaginatedResult<T>> {
   }
 }
 
+/// Mapper for responses that follow the [Result] pattern (message + optional data).
 class ResultMapper<T> extends ResponseMapper<Result<T>> {
   final T Function(Map<String, dynamic>) parser;
 
@@ -47,12 +53,14 @@ class ResultMapper<T> extends ResponseMapper<Result<T>> {
   @override
   Result<T> fromJson(dynamic json) {
     if (json is Map<String, dynamic>) {
+      // Handle responses where data is nested
       if (json.containsKey('data') && json['data'] != null) {
         final data = parser(json['data'] as Map<String, dynamic>);
         final message = json['message'] as String?;
         return Result<T>(data: data, message: message);
       }
 
+      // Handle message-only responses
       if (json.containsKey('message') && json['message'] != null) {
         return Result<T>(data: null, message: json['message'] as String);
       }

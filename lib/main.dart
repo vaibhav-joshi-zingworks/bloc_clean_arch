@@ -38,7 +38,7 @@ Future<void> main() async {
   // Print environment variables to the console in debug mode
   logEnv();
 
-  // Assign a global observer to monitor BLoC/Cubit state changes
+  // Assign a global observer to monitor BLoC/Bloc state changes
   Bloc.observer = AppBlocObserver();
 
   // Start the root application widget

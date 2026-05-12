@@ -9,7 +9,7 @@ void main() {
       final materialColor = CustomMaterialColor.generate(colorValue);
 
       expect(materialColor, isA<MaterialColor>());
-      expect(materialColor.value, colorValue);
+      expect(materialColor.toARGB32(), colorValue);
       expect(materialColor[50], const Color(colorValue));
       expect(materialColor[100], const Color(colorValue));
       expect(materialColor[200], const Color(colorValue));

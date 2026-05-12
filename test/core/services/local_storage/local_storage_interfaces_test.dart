@@ -57,7 +57,7 @@ void main() {
       expect(
         StorageEngine.values,
         containsAll(<StorageEngine>[
-          StorageEngine.sharedPreferences,
+          // StorageEngine.sharedPreferences,
           StorageEngine.secureStorage,
           StorageEngine.hive,
           StorageEngine.isar,

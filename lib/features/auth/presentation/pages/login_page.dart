@@ -29,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
   /// Dispatches the login event to the Bloc.
   void _onLogin() {
     context.read<AuthBloc>().add(
-      AuthLoginRequested(
+      AuthLoginRequestedEvent(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       ),
@@ -44,14 +44,14 @@ class _LoginPageState extends State<LoginPage> {
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           // React to failure state by showing a SnackBar
-          if (state is AuthFailure) {
+          if (state is AuthFailureState) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.appException.message)),
             );
           }
 
           // React to success state (e.g., navigation)
-          if (state is AuthSuccess) {
+          if (state is AuthSuccessState) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Welcome ${state.user.name}')),
             );
@@ -59,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
         },
 
         builder: (context, state) {
-          final isLoading = state is AuthLoading;
+          final isLoading = state is AuthLoadingState;
 
           return Padding(
             padding: const EdgeInsets.all(16),

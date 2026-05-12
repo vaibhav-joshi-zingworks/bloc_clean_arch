@@ -1,38 +1,36 @@
 import 'dart:async';
 
-import 'package:bloc_clean_arch/app/providers/app_message.dart';
-import 'package:bloc_clean_arch/app/providers/global_message_cubit.dart';
-import 'package:bloc_clean_arch/app/providers/global_message_listener.dart';
+import 'package:bloc_clean_arch/app/providers/global_message.dart';
 import 'package:bloc_clean_arch/core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockGlobalMessageCubit extends Mock implements GlobalMessageCubit {}
+class MockGlobalMessageBloc extends Mock implements GlobalMessageBloc {}
 
 void main() {
-  late MockGlobalMessageCubit mockCubit;
+  late MockGlobalMessageBloc mockBloc;
 
   setUp(() {
-    mockCubit = MockGlobalMessageCubit();
+    mockBloc = MockGlobalMessageBloc();
 
-    if (sl.isRegistered<GlobalMessageCubit>()) {
-      sl.unregister<GlobalMessageCubit>();
+    if (sl.isRegistered<GlobalMessageBloc>()) {
+      sl.unregister<GlobalMessageBloc>();
     }
 
-    sl.registerSingleton<GlobalMessageCubit>(mockCubit);
+    sl.registerSingleton<GlobalMessageBloc>(mockBloc);
 
-    when(() => mockCubit.state).thenReturn(null);
-    when(() => mockCubit.clear()).thenAnswer((_) async {});
+    when(() => mockBloc.state).thenReturn(null);
   });
 
   tearDown(() async {
     await sl.reset();
   });
 
-  testWidgets('GlobalMessageListener triggers snackbar when message is emitted', (tester) async {
+  testWidgets('GlobalMessageListener triggers snackbar when message is emitted',
+      (tester) async {
     final controller = StreamController<AppMessage?>();
 
-    when(() => mockCubit.stream).thenAnswer((_) => controller.stream);
+    when(() => mockBloc.stream).thenAnswer((_) => controller.stream);
 
     await tester.pumpWidget(
       MaterialApp(
@@ -59,7 +57,7 @@ void main() {
 
     expect(find.text('Success Message'), findsOneWidget);
 
-    verify(() => mockCubit.clear()).called(1);
+    verify(() => mockBloc.add(const GlobalMessageCleared())).called(1);
 
     await controller.close();
   });

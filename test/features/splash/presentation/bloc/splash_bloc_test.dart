@@ -23,7 +23,7 @@ void main() {
   });
 
   test('initial state should be SplashInitial', () {
-    expect(splashBloc.state, const SplashState.initial());
+    expect(splashBloc.state, const SplashInitialState());
   });
 
   blocTest<SplashBloc, SplashState>(
@@ -33,10 +33,10 @@ void main() {
           .thenAnswer((_) async => AppStatus.authenticated);
       return splashBloc;
     },
-    act: (bloc) => bloc.add(const SplashEvent.started()),
+    act: (bloc) => bloc.add(const SplashEventStarted()),
     expect: () => [
-      const SplashState.loading(),
-      const SplashState.loaded(AppStatus.authenticated),
+      const SplashLoadingState(),
+      const SplashLoadedState(AppStatus.authenticated),
     ],
     verify: (_) {
       verify(() => mockGetAppStatusUseCase()).called(1);
@@ -49,10 +49,10 @@ void main() {
       when(() => mockGetAppStatusUseCase()).thenThrow(Exception('error'));
       return splashBloc;
     },
-    act: (bloc) => bloc.add(const SplashEvent.started()),
+    act: (bloc) => bloc.add(const SplashEventStarted()),
     expect: () => [
-      const SplashState.loading(),
-      const SplashState.error('Exception: error'),
+      const SplashLoadingState(),
+      const SplashErrorState('Exception: error'),
     ],
   );
 }

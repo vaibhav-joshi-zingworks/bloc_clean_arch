@@ -23,6 +23,7 @@ void main() {
     test('getCurrentStatus returns connected when connectivity is not none', () async {
       when(() => mockConnectivity.checkConnectivity())
           .thenAnswer((_) async => [ConnectivityResult.wifi]);
+      when(() => mockInternet.hasInternetAccess()).thenAnswer((_) async => true);
       
       final result = await repository.getCurrentStatus();
       

@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 
 import '/core.dart';
-import '../../app/providers/global_message_cubit.dart';
-import '../../app/providers/locale_cubit.dart';
+import '../../app/providers/global_message.dart';
+import '../../app/providers/locale_bloc.dart';
 import '../../app/router/app_router.dart';
 import '../../features/auth/data/datasources/auth_remote_data_source.dart';
 import '../../features/auth/data/repository/auth_repository_impl.dart';
@@ -24,7 +24,7 @@ import 'injection.config.dart';
 final sl = GetIt.instance;
 
 /// Global initialization for dependency injection.
-/// 
+///
 /// This function triggers the generated [init] method from injectable.
 @InjectableInit(
   initializerName: 'init',
@@ -36,12 +36,7 @@ Future<void> initDependencies() async => sl.init();
 /// Module for registering external dependencies and project-wide services.
 @module
 abstract class InjectionModule {
-  
   // --- Core Services ---
-  
-  @preResolve
-  Future<SharedPreferences> get sharedPreferences =>
-      SharedPreferences.getInstance();
 
   @lazySingleton
   FlutterSecureStorage get secureStorage => const FlutterSecureStorage();
@@ -50,7 +45,7 @@ abstract class InjectionModule {
   Connectivity get connectivity => Connectivity();
 
   // --- Analytics ---
-  
+
   @lazySingleton
   AnalyticsFactory analyticsFactory() => DefaultAnalyticsFactory();
 
@@ -59,16 +54,10 @@ abstract class InjectionModule {
       AnalyticsFacadeImpl(factory.create(AnalyticsType.firebase));
 
   // --- Storage Strategies ---
-  
+
   @lazySingleton
   StorageStrategy storageStrategy(FlutterSecureStorage secureStorage) =>
       SecureStorageStrategy(secureStorage);
-
-  @lazySingleton
-  SharedPreferencesStorageStrategy sharedPreferencesStorageStrategy(
-    SharedPreferences sharedPreferences,
-  ) =>
-      SharedPreferencesStorageStrategy(sharedPreferences);
 
   @lazySingleton
   SecureStorageStrategy secureStorageStrategy(
@@ -80,12 +69,12 @@ abstract class InjectionModule {
   StorageFacade storageFacade(StorageStrategy strategy) =>
       StrategyBasedStorageFacade(strategy);
 
-  @Named('sharedPreferences')
-  @lazySingleton
-  StorageFacade sharedPreferencesStorageFacade(
-    SharedPreferencesStorageStrategy strategy,
-  ) =>
-      StrategyBasedStorageFacade(strategy);
+  // @Named('sharedPreferences')
+  // @lazySingleton
+  // StorageFacade sharedPreferencesStorageFacade(
+  //   SharedPreferencesStorageStrategy strategy,
+  // ) =>
+  //     StrategyBasedStorageFacade(strategy);
 
   @Named('secureStorage')
   @lazySingleton
@@ -191,9 +180,9 @@ abstract class InjectionModule {
   ) =>
       appDeviceInfoService;
 
-  @lazySingleton
-  NotificationRepository notificationRepository() =>
-      SharedPrefsNotificationRepository();
+  // @lazySingleton
+  // NotificationRepository notificationRepository() =>
+  //     SharedPrefsNotificationRepository();
 
   @lazySingleton
   NotificationRateLimitStrategy notificationRateLimitStrategy(
@@ -275,10 +264,10 @@ abstract class InjectionModule {
   // --- App Providers ---
 
   @singleton
-  GlobalMessageCubit globalMessageCubit() => GlobalMessageCubit();
+  GlobalMessageBloc globalMessageBloc() => GlobalMessageBloc();
 
   @singleton
-  LocaleCubit localeCubit() => LocaleCubit();
+  LocaleBloc localeBloc() => LocaleBloc();
 
   @lazySingleton
   GoRouter router() {
@@ -288,7 +277,7 @@ abstract class InjectionModule {
   }
 
   // --- Feature Specific Dependencies ---
-  
+
   // Settings & Theme
   @lazySingleton
   ThemeLocalDataSource themeLocalDataSource(StorageFacade storage) =>
@@ -310,12 +299,12 @@ abstract class InjectionModule {
   BrightnessProvider brightnessProvider() => FlutterBrightnessProvider();
 
   @singleton
-  ThemeCubit themeCubit(
+  ThemeBloc themeBloc(
     LoadThemeModeUseCase loadThemeModeUseCase,
     SaveThemeModeUseCase saveThemeModeUseCase,
-      BrightnessProvider brightnessProvider,
+    BrightnessProvider brightnessProvider,
   ) =>
-      ThemeCubit(loadThemeModeUseCase, saveThemeModeUseCase,brightnessProvider);
+      ThemeBloc(loadThemeModeUseCase, saveThemeModeUseCase, brightnessProvider);
 
   // Splash
   @lazySingleton
@@ -334,7 +323,7 @@ abstract class InjectionModule {
   @injectable
   AuthBloc authBloc(LoginUseCase loginUseCase) =>
       AuthBloc(loginUseCase: loginUseCase);
-  
+
   @lazySingleton
   LoginUseCase loginUseCase(AuthRepository repository) =>
       LoginUseCase(repository: repository);

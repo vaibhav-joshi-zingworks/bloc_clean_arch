@@ -118,20 +118,20 @@ void main() {
     });
   });
 
-  group('SharedPrefsNotificationRepository', () {
-    setUpAll(() {
-      SharedPreferences.setMockInitialValues({});
-    });
-
-    test('setLastSent/getLastSent should roundtrip for a channel key', () async {
-      final repo = SharedPrefsNotificationRepository();
-
-      expect(await repo.getLastSent('general'), isNull);
-
-      await repo.setLastSent('general', 123);
-      expect(await repo.getLastSent('general'), 123);
-    });
-  });
+  // group('SharedPrefsNotificationRepository', () {
+  //   setUpAll(() {
+  //     SharedPreferences.setMockInitialValues({});
+  //   });
+  //
+  //   test('setLastSent/getLastSent should roundtrip for a channel key', () async {
+  //     final repo = SharedPrefsNotificationRepository();
+  //
+  //     expect(await repo.getLastSent('general'), isNull);
+  //
+  //     await repo.setLastSent('general', 123);
+  //     expect(await repo.getLastSent('general'), 123);
+  //   });
+  // });
 
   group('Notification interfaces', () {
     test('NotificationStrategy/RateLimitStrategy/Repository should be implementable', () async {

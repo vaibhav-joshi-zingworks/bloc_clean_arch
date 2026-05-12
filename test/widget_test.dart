@@ -1,14 +1,13 @@
-import 'package:bloc_clean_arch/app/bootstrap/app_initializer_cubit.dart';
-import 'package:bloc_clean_arch/app/providers/app_message.dart';
-import 'package:bloc_clean_arch/app/providers/global_message_cubit.dart';
-import 'package:bloc_clean_arch/app/providers/locale_cubit.dart';
+import 'package:bloc_clean_arch/app/bootstrap/app_initializer_bloc.dart';
+import 'package:bloc_clean_arch/app/providers/global_message.dart';
+import 'package:bloc_clean_arch/app/providers/locale_bloc.dart';
 import 'package:bloc_clean_arch/app/view/app.dart';
 import 'package:bloc_clean_arch/core.dart';
 import 'package:bloc_clean_arch/core/services/app_device_info/infrastructure/services/brightness_provider.dart';
 import 'package:bloc_clean_arch/features/settings/domain/repositories/theme_repository.dart';
 import 'package:bloc_clean_arch/features/settings/domain/usecases/load_theme_mode_use_case.dart';
 import 'package:bloc_clean_arch/features/settings/domain/usecases/save_theme_mode_use_case.dart';
-import 'package:bloc_clean_arch/features/settings/presentation/cubit/theme_cubit.dart';
+import 'package:bloc_clean_arch/features/settings/presentation/bloc/theme_bloc.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,19 +17,19 @@ import 'package:mocktail/mocktail.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  late MockAppInitializerCubit mockAppInitializerCubit;
-  late MockGlobalMessageCubit mockGlobalMessageCubit;
+  late MockAppInitializerBloc mockAppInitializerBloc;
+  late MockGlobalMessageBloc mockGlobalMessageBloc;
 
   setUp(() async {
     await sl.reset();
 
-    SharedPreferences.setMockInitialValues({});
+    // SharedPreferences.setMockInitialValues({});
 
     // -------------------------------
     // ✅ Router (REAL - NOT MOCK)
     // -------------------------------
     sl.registerLazySingleton<GoRouter>(
-          () => GoRouter(
+      () => GoRouter(
         routes: [
           GoRoute(
             path: '/',
@@ -43,10 +42,10 @@ void main() {
     );
 
     // -------------------------------
-    // ✅ ThemeCubit (REAL)
+    // ✅ ThemeBloc (REAL)
     // -------------------------------
-    sl.registerLazySingleton<ThemeCubit>(
-          () => ThemeCubit(
+    sl.registerLazySingleton<ThemeBloc>(
+      () => ThemeBloc(
         FakeLoadTheme(),
         FakeSaveTheme(),
         FakeBrightness(),
@@ -54,47 +53,44 @@ void main() {
     );
 
     // -------------------------------
-    // ✅ LocaleCubit (FAKE)
+    // ✅ LocaleBloc (FAKE)
     // -------------------------------
-    sl.registerLazySingleton<LocaleCubit>(
-          () => FakeLocaleCubit(),
+    sl.registerLazySingleton<LocaleBloc>(
+      () => FakeLocaleBloc(),
     );
 
     // -------------------------------
-    // 🔥 GlobalMessageCubit (FIXED)
+    // 🔥 GlobalMessageBloc (FIXED)
     // -------------------------------
-    mockGlobalMessageCubit = MockGlobalMessageCubit();
+    mockGlobalMessageBloc = MockGlobalMessageBloc();
 
-    when(() => mockGlobalMessageCubit.state).thenReturn(null);
+    when(() => mockGlobalMessageBloc.state).thenReturn(null);
 
     whenListen(
-      mockGlobalMessageCubit,
+      mockGlobalMessageBloc,
       const Stream<AppMessage?>.empty(),
       initialState: null,
     );
 
-    sl.registerLazySingleton<GlobalMessageCubit>(
-          () => mockGlobalMessageCubit,
+    sl.registerLazySingleton<GlobalMessageBloc>(
+      () => mockGlobalMessageBloc,
     );
 
     // -------------------------------
-    // 🔥 AppInitializerCubit
+    // 🔥 AppInitializerBloc
     // -------------------------------
-    mockAppInitializerCubit = MockAppInitializerCubit();
+    mockAppInitializerBloc = MockAppInitializerBloc();
 
-    when(() => mockAppInitializerCubit.initialize())
-        .thenAnswer((_) async {});
-
-    when(() => mockAppInitializerCubit.state).thenReturn(null);
+    when(() => mockAppInitializerBloc.state).thenReturn(null);
 
     whenListen(
-      mockAppInitializerCubit,
+      mockAppInitializerBloc,
       const Stream<void>.empty(),
       initialState: null,
     );
 
-    sl.registerLazySingleton<AppInitializerCubit>(
-          () => mockAppInitializerCubit,
+    sl.registerLazySingleton<AppInitializerBloc>(
+      () => mockAppInitializerBloc,
     );
   });
 
@@ -133,30 +129,18 @@ void main() {
 // 🔥 MOCKS
 //
 
-class MockAppInitializerCubit extends MockCubit<void>
-    implements AppInitializerCubit {}
+class MockAppInitializerBloc extends MockBloc<AppInitializerEvent, void>
+    implements AppInitializerBloc {}
 
-class MockGlobalMessageCubit extends MockCubit<AppMessage?>
-    implements GlobalMessageCubit {}
+class MockGlobalMessageBloc extends MockBloc<GlobalMessageEvent, AppMessage?>
+    implements GlobalMessageBloc {}
 
 //
 // 🔥 FAKES
 //
 
-class FakeLocaleCubit extends Cubit<Locale?> implements LocaleCubit {
-  FakeLocaleCubit() : super(const Locale('en'));
-
-  @override
-  void setArabic() => emit(const Locale('ar'));
-
-  @override
-  void setEnglish() => emit(const Locale('en'));
-
-  @override
-  void setLocale(Locale? locale) => emit(locale);
-
-  @override
-  void useSystemLocale() => emit(null);
+class FakeLocaleBloc extends Bloc<LocaleEvent, Locale?> implements LocaleBloc {
+  FakeLocaleBloc() : super(const Locale('en'));
 }
 
 class FakeLoadTheme extends LoadThemeModeUseCase {

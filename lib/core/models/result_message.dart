@@ -1,16 +1,28 @@
 import '../../core.dart';
 
-part 'result_message.freezed.dart';
-part 'result_message.g.dart';
-
 /// Represents a simple message-only response from the domain/data layer.
-@freezed
-sealed class ResultMessage with _$ResultMessage {
-  const factory ResultMessage({
-    /// The message string returned by the API or service.
-    required String message,
-  }) = _ResultMessage;
+class ResultMessage extends Equatable {
+  /// The message string returned by the API or service.
+  final String message;
 
-  factory ResultMessage.fromJson(Map<String, dynamic> json) =>
-      _$ResultMessageFromJson(json);
+  const ResultMessage({
+    required this.message,
+  });
+
+  /// Creates a [ResultMessage] from a JSON map.
+  factory ResultMessage.fromJson(Map<String, dynamic> json) {
+    return ResultMessage(
+      message: json['message'] as String,
+    );
+  }
+
+  /// Converts the [ResultMessage] into a JSON map.
+  Map<String, dynamic> toJson() {
+    return {
+      'message': message,
+    };
+  }
+
+  @override
+  List<Object?> get props => [message];
 }

@@ -28,7 +28,7 @@ void main() {
 
   group('LoginPage', () {
     testWidgets('renders email and password text fields', (tester) async {
-      when(() => mockAuthBloc.state).thenReturn(const AuthState.initial());
+      when(() => mockAuthBloc.state).thenReturn(const AuthInitialState());
 
       await tester.pumpWidget(createWidgetUnderTest());
 
@@ -38,7 +38,7 @@ void main() {
     });
 
     testWidgets('adds AuthLoginRequested to AuthBloc when login button is pressed', (tester) async {
-      when(() => mockAuthBloc.state).thenReturn(const AuthState.initial());
+      when(() => mockAuthBloc.state).thenReturn(const AuthInitialState());
 
       await tester.pumpWidget(createWidgetUnderTest());
 
@@ -46,14 +46,14 @@ void main() {
       await tester.enterText(find.byType(TextField).at(1), 'password');
       await tester.tap(find.byType(ElevatedButton));
 
-      verify(() => mockAuthBloc.add(const AuthEvent.loginRequested(
+      verify(() => mockAuthBloc.add(const AuthLoginRequestedEvent(
         email: 'test@test.com',
         password: 'password',
       ))).called(1);
     });
 
     testWidgets('shows CircularProgressIndicator when loading', (tester) async {
-      when(() => mockAuthBloc.state).thenReturn(const AuthState.loading());
+      when(() => mockAuthBloc.state).thenReturn(const AuthLoadingState());
 
       await tester.pumpWidget(createWidgetUnderTest());
 
@@ -66,8 +66,8 @@ void main() {
 
       whenListen(
         mockAuthBloc,
-        Stream.fromIterable([AuthState.failure(appException: exception)]),
-        initialState: const AuthState.initial(),
+        Stream.fromIterable([AuthFailureState(appException: exception)]),
+        initialState: const AuthInitialState(),
       );
 
       await tester.pumpWidget(createWidgetUnderTest());

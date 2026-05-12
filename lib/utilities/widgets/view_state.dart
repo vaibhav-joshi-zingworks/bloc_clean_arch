@@ -1,6 +1,6 @@
 /// A sealed class representing the different states a view can be in.
 /// 
-/// This is typically used in conjunction with Cubits or BLoCs to emit 
+/// This is typically used in conjunction with Blocs or BLoCs to emit 
 /// states that the UI can easily switch between.
 sealed class ViewState<T> {
   const ViewState();

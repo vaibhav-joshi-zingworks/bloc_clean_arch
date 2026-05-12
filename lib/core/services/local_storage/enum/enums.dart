@@ -1,7 +1,7 @@
 /// Enumerates the supported persistence engines available in the application.
-enum StorageEngine { 
-  /// Standard key-value storage for simple preferences.
-  sharedPreferences, 
+enum StorageEngine {
+  // /// Standard key-value storage for simple preferences.
+  // sharedPreferences,
   
   /// Encrypted storage for sensitive information like auth tokens.
   secureStorage, 

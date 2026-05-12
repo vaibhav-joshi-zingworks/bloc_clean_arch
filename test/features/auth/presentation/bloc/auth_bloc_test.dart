@@ -35,24 +35,24 @@ void main() {
   );
 
   group('AuthBloc', () {
-    test('initial state should be AuthInitial', () {
-      expect(authBloc.state, const AuthState.initial());
+    test('initial state should be AuthInitialState', () {
+      expect(authBloc.state, const AuthInitialState());
     });
 
     blocTest<AuthBloc, AuthState>(
-      'emits [AuthLoading, AuthSuccess] when login is successful',
+      'emits [AuthLoadingState, AuthSuccessState] when login is successful',
       build: () {
         when(() => mockLoginUseCase(any()))
             .thenAnswer((_) async => Right(tUser));
         return authBloc;
       },
-      act: (bloc) => bloc.add(const AuthEvent.loginRequested(
+      act: (bloc) => bloc.add(const AuthLoginRequestedEvent(
         email: 'test@example.com',
         password: 'password123',
       )),
       expect: () => [
-        const AuthState.loading(),
-        AuthState.success(user: tUser),
+        const AuthLoadingState(),
+        AuthSuccessState(user: tUser),
       ],
       verify: (_) {
         verify(() => mockLoginUseCase(any())).called(1);
@@ -60,20 +60,20 @@ void main() {
     );
 
     blocTest<AuthBloc, AuthState>(
-      'emits [AuthLoading, AuthFailure] when login fails with AppException',
+      'emits [AuthLoadingState, AuthFailureState] when login fails with AppException',
       build: () {
         when(() => mockLoginUseCase(any()))
             .thenAnswer((_) async => Left(UnauthorizedError()));
         return authBloc;
       },
-      act: (bloc) => bloc.add(const AuthEvent.loginRequested(
+      act: (bloc) => bloc.add(const AuthLoginRequestedEvent(
         email: 'test@example.com',
         password: 'password123',
       )),
       expect: () => [
-        const AuthState.loading(),
-        isA<AuthFailure>().having(
-          (f) => f.appException,
+        const AuthLoadingState(),
+        isA<AuthFailureState>().having(
+          (AuthFailureState f) => f.appException,
           'appException',
           isA<UnauthorizedError>(),
         ),
@@ -81,19 +81,19 @@ void main() {
     );
 
     blocTest<AuthBloc, AuthState>(
-      'emits [AuthLoading, AuthFailure] when an unknown error occurs',
+      'emits [AuthLoadingState, AuthFailureState] when an unknown error occurs',
       build: () {
         when(() => mockLoginUseCase(any())).thenThrow(Exception());
         return authBloc;
       },
-      act: (bloc) => bloc.add(const AuthEvent.loginRequested(
+      act: (bloc) => bloc.add(const AuthLoginRequestedEvent(
         email: 'test@example.com',
         password: 'password123',
       )),
       expect: () => [
-        const AuthState.loading(),
-        isA<AuthFailure>().having(
-          (f) => f.appException,
+        const AuthLoadingState(),
+        isA<AuthFailureState>().having(
+          (AuthFailureState f) => f.appException,
           'appException',
           isA<UnknownError>(),
         ),
@@ -113,19 +113,19 @@ void main() {
         return authBloc;
       },
       act: (bloc) async {
-        bloc.add(const AuthEvent.loginRequested(
+        bloc.add(const AuthLoginRequestedEvent(
           email: 'test@example.com',
           password: 'password123',
         ));
-        bloc.add(const AuthEvent.loginRequested(
+        bloc.add(const AuthLoginRequestedEvent(
           email: 'test2@example.com',
           password: 'password456',
         ));
       },
-      wait: Duration(milliseconds: 200),
+      wait: const Duration(milliseconds: 200),
       expect: () => [
-        const AuthState.loading(),
-        AuthState.success(user: tUser),
+        const AuthLoadingState(),
+        AuthSuccessState(user: tUser),
       ],
       verify: (_) {
         verify(() => mockLoginUseCase(any())).called(1);
@@ -133,19 +133,19 @@ void main() {
     );
     
     blocTest<AuthBloc, AuthState>(
-      'emits [AuthLoading, AuthFailure] with TimeoutError when LoginUseCase throws TimeoutError',
+      'emits [AuthLoadingState, AuthFailureState] with TimeoutError when LoginUseCase throws TimeoutError',
       build: () {
         when(() => mockLoginUseCase(any())).thenThrow(TimeoutError());
         return authBloc;
       },
-      act: (bloc) => bloc.add(const AuthEvent.loginRequested(
+      act: (bloc) => bloc.add(const AuthLoginRequestedEvent(
         email: 'test@example.com',
         password: 'password123',
       )),
       expect: () => [
-        const AuthState.loading(),
-        isA<AuthFailure>().having(
-          (f) => f.appException,
+        const AuthLoadingState(),
+        isA<AuthFailureState>().having(
+          (AuthFailureState f) => f.appException,
           'appException',
           isA<TimeoutError>(),
         ),

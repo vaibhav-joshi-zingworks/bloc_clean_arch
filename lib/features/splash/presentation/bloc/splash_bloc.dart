@@ -12,28 +12,24 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
   final GetAppStatusUseCase _getAppStatus;
 
   SplashBloc(this._getAppStatus)
-      : super(const SplashState.initial()) {
-    on<SplashEvent>((event, emit) async {
-      // Map incoming events to their respective handler methods
-      await event.map(
-        started: (_) => _onStarted(emit),
-      );
-    });
+      : super(const SplashInitialState()) {
+    on<SplashEventStarted>(_onStarted);
   }
 
   /// Handles the 'started' event to trigger initial status check.
-  Future<void> _onStarted(Emitter<SplashState> emit) async {
-    emit(const SplashState.loading());
+  Future<void> _onStarted(SplashEventStarted event, Emitter<SplashState> emit) async {
+    emit(const SplashLoadingState());
 
     try {
       // Fetch the app status from the domain layer
       final status = await _getAppStatus();
 
       // Emit success state with the determined status
-      emit(SplashState.loaded(status));
+      emit(SplashLoadedState(status));
     } catch (e) {
       // Emit error state if initialization fails
-      emit(SplashState.error(e.toString()));
+      emit(SplashErrorState(e.toString()));
     }
   }
 }
+// Force re-analysis

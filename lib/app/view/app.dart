@@ -4,12 +4,11 @@ import 'package:go_router/go_router.dart';
 import '/core.dart';
 import '../../core/design/responsive_context.dart';
 import '../../features/settings/xcore.dart';
-import '../providers/global_message_cubit.dart';
-import '../providers/locale_cubit.dart';
+import '../providers/locale_bloc.dart';
 import '../xcore.dart';
 
 /// The root widget of the application.
-/// 
+///
 /// It configures the global providers, theme, localization, and routing.
 class App extends StatefulWidget {
   const App({super.key});
@@ -25,7 +24,7 @@ class _AppState extends State<App> {
 
     // Trigger app-wide initialization logic (e.g., analytics, notifications)
     Future.microtask(() {
-      sl<AppInitializerCubit>().initialize();
+      sl<AppInitializerBloc>().add(const AppInitializationRequested());
     });
   }
 
@@ -36,14 +35,16 @@ class _AppState extends State<App> {
 
     return MultiBlocProvider(
       providers: [
-        // Provide global Blocs/Cubits available throughout the widget tree
-        BlocProvider.value(value: sl<ThemeCubit>()..loadTheme()),
-        BlocProvider.value(value: sl<LocaleCubit>()),
-        BlocProvider.value(value: sl<GlobalMessageCubit>()),
+        // Provide global Blocs available throughout the widget tree
+        BlocProvider.value(
+          value: sl<ThemeBloc>()..add(const ThemeLoadRequested()),
+        ),
+        BlocProvider.value(value: sl<LocaleBloc>()),
+        BlocProvider.value(value: sl<GlobalMessageBloc>()),
       ],
-      child: BlocBuilder<ThemeCubit, ThemeState>(
+      child: BlocBuilder<ThemeBloc, ThemeState>(
         builder: (context, themeState) {
-          return BlocBuilder<LocaleCubit, Locale?>(
+          return BlocBuilder<LocaleBloc, Locale?>(
             builder: (context, locale) {
               return MaterialApp.router(
                 debugShowCheckedModeBanner: false,

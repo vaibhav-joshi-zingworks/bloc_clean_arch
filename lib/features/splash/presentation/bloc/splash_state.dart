@@ -1,21 +1,37 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-
+import '../../../../core.dart';
 import '../../domain/entities/app_status.dart';
 
-part 'splash_state.freezed.dart';
-
 /// States emitted by the [SplashBloc] during the initialization process.
-@freezed
-class SplashState with _$SplashState {
-  /// The initial state before any actions are taken.
-  const factory SplashState.initial() = _Initial;
+abstract class SplashState extends Equatable {
+  const SplashState();
 
-  /// State indicating that the application status is being checked.
-  const factory SplashState.loading() = _Loading;
-
-  /// State indicating that the application status has been successfully determined.
-  const factory SplashState.loaded(AppStatus status) = _Loaded;
-
-  /// State indicating that an error occurred during the splash process.
-  const factory SplashState.error(String message) = _Error;
+  @override
+  List<Object?> get props => [];
 }
+
+class SplashInitialState extends SplashState {
+  const SplashInitialState();
+}
+
+class SplashLoadingState extends SplashState {
+  const SplashLoadingState();
+}
+
+class SplashLoadedState extends SplashState {
+  final AppStatus status;
+
+  const SplashLoadedState(this.status);
+
+  @override
+  List<Object?> get props => [status];
+}
+
+class SplashErrorState extends SplashState {
+  final String message;
+
+  const SplashErrorState(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+// Force re-analysis

@@ -6,19 +6,19 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('SplashEvent', () {
     test('started should support value equality', () {
-      expect(const SplashEvent.started(), const SplashEvent.started());
+      expect(const SplashEventStarted(), const SplashEventStarted());
     });
   });
 
   group('SplashState', () {
     test('initial should support value equality', () {
-      expect(const SplashState.initial(), const SplashState.initial());
+      expect(const SplashInitialState(), const SplashInitialState());
     });
 
     test('loaded should support value equality', () {
       expect(
-        const SplashState.loaded(AppStatus.authenticated),
-        const SplashState.loaded(AppStatus.authenticated),
+        const SplashLoadedState(AppStatus.authenticated),
+        const SplashLoadedState(AppStatus.authenticated),
       );
     });
   });

@@ -1,5 +1,5 @@
 export 'package:flutter_secure_storage/flutter_secure_storage.dart';
-export 'package:shared_preferences/shared_preferences.dart';
+// export 'package:shared_preferences/shared_preferenc/**/es.dart';
 
 export '../local_storage/domain/facades/storage_facade.dart';
 export '../local_storage/domain/factories/storage_factory.dart';

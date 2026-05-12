@@ -13,9 +13,9 @@ import 'package:get_it/get_it.dart' as _i174;
 import 'package:go_router/go_router.dart' as _i583;
 import 'package:injectable/injectable.dart' as _i526;
 
-import '../../app/bootstrap/app_initializer_cubit.dart' as _i163;
-import '../../app/providers/global_message_cubit.dart' as _i938;
-import '../../app/providers/locale_cubit.dart' as _i215;
+import '../../app/bootstrap/app_initializer_bloc.dart' as _i852;
+import '../../app/providers/global_message.dart' as _i756;
+import '../../app/providers/locale_bloc.dart' as _i939;
 import '../../core.dart' as _i943;
 import '../../features/auth/data/datasources/auth_remote_data_source.dart'
     as _i107;
@@ -47,17 +47,13 @@ extension GetItInjectableX on _i174.GetIt {
       environmentFilter,
     );
     final injectionModule = _$InjectionModule();
-    await gh.factoryAsync<_i943.SharedPreferences>(
-      () => injectionModule.sharedPreferences,
-      preResolve: true,
-    );
     await gh.factoryAsync<_i943.AppDeviceInfoService>(
       () => injectionModule.appDeviceInfoService(),
       preResolve: true,
     );
-    gh.singleton<_i938.GlobalMessageCubit>(
-        () => injectionModule.globalMessageCubit());
-    gh.singleton<_i215.LocaleCubit>(() => injectionModule.localeCubit());
+    gh.singleton<_i756.GlobalMessageBloc>(
+        () => injectionModule.globalMessageBloc());
+    gh.singleton<_i939.LocaleBloc>(() => injectionModule.localeBloc());
     gh.lazySingleton<_i943.FlutterSecureStorage>(
         () => injectionModule.secureStorage);
     gh.lazySingleton<_i943.Connectivity>(() => injectionModule.connectivity);
@@ -71,8 +67,6 @@ extension GetItInjectableX on _i174.GetIt {
         () => injectionModule.internetCheckStrategy());
     gh.lazySingleton<_i943.ApiResponseLogInterceptor>(
         () => injectionModule.apiResponseLogInterceptor());
-    gh.lazySingleton<_i943.NotificationRepository>(
-        () => injectionModule.notificationRepository());
     gh.lazySingleton<_i943.NotificationChannelRegistry>(
         () => injectionModule.notificationChannelRegistry());
     gh.lazySingleton<_i943.AwesomeNotificationsAdapter>(
@@ -113,9 +107,6 @@ extension GetItInjectableX on _i174.GetIt {
           .secureStorageFacade(gh<_i943.SecureStorageStrategy>()),
       instanceName: 'secureStorage',
     );
-    gh.lazySingleton<_i943.SharedPreferencesStorageStrategy>(() =>
-        injectionModule
-            .sharedPreferencesStorageStrategy(gh<_i943.SharedPreferences>()));
     gh.lazySingleton<_i210.SplashRepository>(() =>
         injectionModule.splashRepository(gh<_i552.SplashLocalDataSource>()));
     gh.lazySingleton<_i943.DeviceInfoRepository>(() =>
@@ -141,11 +132,6 @@ extension GetItInjectableX on _i174.GetIt {
         injectionModule.themeRepository(gh<_i691.ThemeLocalDataSource>()));
     gh.lazySingleton<_i1043.GetAppStatusUseCase>(() =>
         injectionModule.getAppStatusUseCase(gh<_i210.SplashRepository>()));
-    gh.lazySingleton<_i943.StorageFacade>(
-      () => injectionModule.sharedPreferencesStorageFacade(
-          gh<_i943.SharedPreferencesStorageStrategy>()),
-      instanceName: 'sharedPreferences',
-    );
     gh.lazySingleton<_i943.PermissionRepository>(
         () => injectionModule.permissionRepository(
               gh<_i943.PermissionStrategyFactory>(),
@@ -163,13 +149,13 @@ extension GetItInjectableX on _i174.GetIt {
         injectionModule.saveThemeModeUseCase(gh<_i691.ThemeRepository>()));
     gh.lazySingleton<_i943.NetworkMonitorService>(() => injectionModule
         .networkMonitorService(gh<_i943.NetworkMonitorRepository>()));
-    gh.lazySingleton<_i163.AppInitializerCubit>(() => _i163.AppInitializerCubit(
+    gh.lazySingleton<_i852.AppInitializerBloc>(() => _i852.AppInitializerBloc(
           analytics: gh<_i943.AnalyticsFacade>(),
           notificationStrategy: gh<_i943.NotificationStrategy>(),
         ));
     gh.factory<_i442.SplashBloc>(
         () => _i442.SplashBloc(gh<_i1043.GetAppStatusUseCase>()));
-    gh.singleton<_i691.ThemeCubit>(() => injectionModule.themeCubit(
+    gh.singleton<_i691.ThemeBloc>(() => injectionModule.themeBloc(
           gh<_i691.LoadThemeModeUseCase>(),
           gh<_i691.SaveThemeModeUseCase>(),
           gh<_i352.BrightnessProvider>(),

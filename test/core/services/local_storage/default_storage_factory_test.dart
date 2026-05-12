@@ -8,14 +8,14 @@ void main() {
 
   setUp(() {
     factory = DefaultStorageStrategyFactory();
-    SharedPreferences.setMockInitialValues({});
+    // SharedPreferences.setMockInitialValues({});
   });
 
   group('DefaultStorageStrategyFactory', () {
-    test('should create sharedPreferences engine', () async {
-      final facade = await factory.create(StorageEngine.sharedPreferences);
-      expect(facade, isA<StrategyBasedStorageFacade>());
-    });
+    // test('should create sharedPreferences engine', () async {
+    //   final facade = await factory.create(StorageEngine.sharedPreferences);
+    //   expect(facade, isA<StrategyBasedStorageFacade>());
+    // });
 
     test('should create secureStorage engine', () async {
       final facade = await factory.create(StorageEngine.secureStorage);

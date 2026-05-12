@@ -18,20 +18,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   /// Internal flag to prevent redundant concurrent login attempts.
   bool _isLoginInProgress = false;
 
-  AuthBloc({required this.loginUseCase}) : super(AuthInitial()) {
-    on<AuthLoginRequested>(_onLoginRequested);
+  AuthBloc({required this.loginUseCase}) : super(const AuthInitialState()) {
+    on<AuthLoginRequestedEvent>(_onLoginRequested);
   }
 
   /// Handles the login request event.
   Future<void> _onLoginRequested(
-      AuthLoginRequested event,
+      AuthLoginRequestedEvent event,
       Emitter<AuthState> emit,
       ) async {
     if (_isLoginInProgress) return;
 
     _isLoginInProgress = true;
 
-    emit(AuthLoading());
+    emit(const AuthLoadingState());
 
     try {
       // Execute the login use case
@@ -49,21 +49,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       result.fold(
             (failure) {
           // failure is already AppException → pass directly to UI state
-          emit(AuthFailure(appException: failure));
+          emit(AuthFailureState(appException: failure));
         },
             (user) {
-          emit(AuthSuccess(user: user));
+          emit(AuthSuccessState(user: user));
         },
       );
     }
     on AppException catch (e) {
-      emit(AuthFailure(appException: e));
+      emit(AuthFailureState(appException: e));
     }
     catch (e) {
-      emit(AuthFailure(appException: UnknownError()));
+      emit(AuthFailureState(appException: UnknownError()));
     }
     finally {
       _isLoginInProgress = false;
     }
   }
 }
+// Force re-analysis

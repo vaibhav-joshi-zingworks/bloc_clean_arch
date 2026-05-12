@@ -1,14 +1,9 @@
 import 'package:bloc_clean_arch/features/auth/domain/entity/user_entity.dart';
 
-import '../../../../core.dart';
-
-part 'user_model.g.dart';
-
 /// Data Transfer Object (DTO) for the User entity.
 /// 
 /// Extends [UserEntity] and adds JSON serialization logic 
 /// specific to the data layer.
-@JsonSerializable()
 class UserModel extends UserEntity {
   UserModel({
     required super.id,
@@ -17,9 +12,20 @@ class UserModel extends UserEntity {
   });
 
   /// Creates a [UserModel] from a JSON map.
-  factory UserModel.fromJson(Map<String, dynamic> json) =>
-      _$UserModelFromJson(json);
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      id: json['id'] as int,
+      name: json['name'] as String,
+      email: json['email'] as String,
+    );
+  }
 
   /// Converts the [UserModel] into a JSON map.
-  Map<String, dynamic> toJson() => _$UserModelToJson(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+    };
+  }
 }

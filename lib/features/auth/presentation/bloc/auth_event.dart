@@ -1,13 +1,23 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-
-part 'auth_event.freezed.dart';
+import '../../../../core.dart';
 
 /// Events that can be triggered on the [AuthBloc].
-@freezed
-sealed class AuthEvent with _$AuthEvent {
-  /// Event triggered when a user attempts to log in with [email] and [password].
-  const factory AuthEvent.loginRequested({
-    required String email,
-    required String password,
-  }) = AuthLoginRequested;
+abstract class AuthEvent extends Equatable {
+  const AuthEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
+/// Event triggered when a user attempts to log in with [email] and [password].
+class AuthLoginRequestedEvent extends AuthEvent {
+  final String email;
+  final String password;
+
+  const AuthLoginRequestedEvent({
+    required this.email,
+    required this.password,
+  });
+
+  @override
+  List<Object?> get props => [email, password];
 }

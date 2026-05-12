@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../core.dart';
 
-/// Global observer for all Blocs and Cubits in the application.
+/// Global observer for all Blocs and Blocs in the application.
 /// 
 /// It monitors the lifecycle (creation, changes, errors, closing) of every Bloc
 /// and logs them to the console for easier debugging and performance monitoring.

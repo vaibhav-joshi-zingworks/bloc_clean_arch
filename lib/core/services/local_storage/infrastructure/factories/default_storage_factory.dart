@@ -8,11 +8,11 @@ class DefaultStorageStrategyFactory implements StorageStrategyFactory {
   @override
   Future<StorageFacade> create(StorageEngine engine) async {
     switch (engine) {
-      case StorageEngine.sharedPreferences:
-        // Initialize SharedPreferences and wrap it in a Strategy-based Facade
-        final prefs = await SharedPreferences.getInstance();
-        final strategy = SharedPreferencesStorageStrategy(prefs);
-        return StrategyBasedStorageFacade(strategy);
+      // case StorageEngine.sharedPreferences:
+      //   // Initialize SharedPreferences and wrap it in a Strategy-based Facade
+      //   final prefs = await SharedPreferences.getInstance();
+      //   final strategy = SharedPreferencesStorageStrategy(prefs);
+      //   return StrategyBasedStorageFacade(strategy);
 
       case StorageEngine.secureStorage:
         // Create SecureStorage strategy and wrap it in a Strategy-based Facade

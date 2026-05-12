@@ -21,7 +21,7 @@ void main() {
     }
     sl.registerSingleton<SplashBloc>(mockSplashBloc);
 
-    when(() => mockSplashBloc.state).thenReturn(const SplashState.initial());
+    when(() => mockSplashBloc.state).thenReturn(const SplashInitialState());
   });
 
   tearDown(() {
@@ -34,13 +34,13 @@ void main() {
   });
 
   testWidgets('shows loading widget when state is loading', (tester) async {
-    when(() => mockSplashBloc.state).thenReturn(const SplashState.loading());
+    when(() => mockSplashBloc.state).thenReturn(const SplashLoadingState());
     await tester.pumpWidget(const MaterialApp(home: SplashView()));
     expect(find.byType(AppLoadingWidget), findsOneWidget);
   });
 
   testWidgets('shows error message when state is error', (tester) async {
-    when(() => mockSplashBloc.state).thenReturn(const SplashState.error('Failed'));
+    when(() => mockSplashBloc.state).thenReturn(const SplashErrorState('Failed'));
     await tester.pumpWidget(const MaterialApp(home: SplashView()));
     expect(find.text('Error: Failed'), findsOneWidget);
   });

@@ -1,5 +1,5 @@
 # =============================
-# Flutter Project Makefile
+# fvm flutter Project Makefile
 # =============================
 # This Makefile acts as a developer productivity layer + CI/CD helper.
 # It standardizes commands for build, test, release, and GitHub workflows.
@@ -24,12 +24,12 @@ DEBUG_INFO := ./debug-info
 # --------- SETUP -------------
 # =============================
 
-# Runs Flutter doctor and installs dependencies
+# Runs fvm flutter doctor and installs dependencies
 # Use this when setting up the project for the first time
 .PHONY: setup
 setup:
-	@flutter doctor
-	@flutter pub get
+	@fvm flutter doctor
+	@fvm flutter pub get
 
 # Full bootstrap: ensures GitHub auth + environment setup
 # Recommended for new developers onboarding
@@ -42,17 +42,17 @@ bootstrap: gh-check setup
 # --------- CLEAN -------------
 # =============================
 
-# Standard Flutter clean
+# Standard fvm flutter clean
 # Removes build/ and temporary artifacts
 .PHONY: clean
 clean:
-	@flutter clean
+	@fvm flutter clean
 
 # Deep clean: removes all caches including Pods, Gradle, and Dart cache
 # Useful when facing weird build or dependency issues
 .PHONY: deep-clean
 deep-clean:
-	@flutter clean
+	@fvm flutter clean
 	@rm -rf pubspec.lock .dart_tool build ios/Pods ios/Podfile.lock
 	@cd android && ./gradlew clean && cd ..
 
@@ -68,22 +68,22 @@ reset: deep-clean setup
 # Run app in debug mode
 .PHONY: run
 run:
-	@flutter run
+	@fvm flutter run
 
 # Run app in release mode (closer to production behavior)
 .PHONY: run-release
 run-release:
-	@flutter run --release
+	@fvm flutter run --release
 
 # List all connected devices/emulators
 .PHONY: devices
 devices:
-	@flutter devices
+	@fvm flutter devices
 
 # Detailed environment diagnostics
 .PHONY: doctor
 doctor:
-	@flutter doctor -v
+	@fvm flutter doctor -v
 
 
 # =============================
@@ -93,22 +93,22 @@ doctor:
 # Automatically fix lint issues
 .PHONY: fix
 fix:
-	@dart fix --apply
+	@fvm dart fix --apply
 
 # Static analysis for code issues
 .PHONY: analyze
 analyze:
-	@dart analyze lib test
+	@fvm dart analyze lib test
 
 # Format code (auto-fix style)
 .PHONY: format
 format:
-	@dart format lib test
+	@fvm dart format lib test
 
 # Check formatting without modifying files (CI-friendly)
 .PHONY: format-check
 format-check:
-	@dart format --set-exit-if-changed lib test
+	@fvm dart format --set-exit-if-changed lib test
 
 # Run all quality checks together
 .PHONY: prepare
@@ -122,13 +122,13 @@ prepare: fix format analyze
 # Run all unit/widget tests
 .PHONY: test
 test:
-	@flutter test
+	@fvm flutter test
 
 # Generate test coverage report
 # Requires `lcov` installed for HTML output
 .PHONY: coverage
 coverage:
-	@flutter test --coverage
+	@fvm flutter test --coverage
 	@genhtml coverage/lcov.info -o coverage/html || echo "Install lcov"
 
 
@@ -139,12 +139,12 @@ coverage:
 # Run code generation once (Freezed, JSON, etc.)
 .PHONY: build
 build:
-	@dart run build_runner build --delete-conflicting-outputs
+	@fvm flutter pub run build_runner build --delete-conflicting-outputs
 
 # Watch mode for continuous code generation
 .PHONY: watch
 watch:
-	@dart run build_runner watch --delete-conflicting-outputs
+	@fvm flutter pub run build_runner watch --delete-conflicting-outputs
 
 
 # =============================
@@ -154,12 +154,12 @@ watch:
 # Build release APK with obfuscation
 .PHONY: apk
 apk:
-	@flutter build apk --release --obfuscate --split-debug-info=$(DEBUG_INFO)
+	@fvm flutter build apk --release --obfuscate --split-debug-info=$(DEBUG_INFO)
 
 # Build release AAB (Play Store requirement)
 .PHONY: aab
 aab:
-	@flutter build appbundle --release --obfuscate --split-debug-info=$(DEBUG_INFO)
+	@fvm flutter build appbundle --release --obfuscate --split-debug-info=$(DEBUG_INFO)
 
 
 # =============================
@@ -256,14 +256,14 @@ release: prepare test bump-patch commit push tag
 # Run CI checks locally (same as pipeline)
 .PHONY: ci
 ci:
-	@flutter pub get
-	@dart analyze
-	@flutter test
+	@fvm flutter pub get
+	@fvm dart analyze
+	@fvm flutter test
 
 # Manually trigger CD workflow via GitHub CLI
 .PHONY: cd
 cd: gh-check
-	@gh workflow run "Flutter CD"
+	@gh workflow run "fvm flutter CD"
 
 # List GitHub Actions runs
 .PHONY: actions

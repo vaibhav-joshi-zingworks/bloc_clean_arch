@@ -7,27 +7,28 @@ void main() {
   group('AuthEvent', () {
     test('loginRequested support value equality', () {
       expect(
-        const AuthEvent.loginRequested(email: 'e', password: 'p'),
-        const AuthEvent.loginRequested(email: 'e', password: 'p'),
+        const AuthLoginRequestedEvent(email: 'e', password: 'p'),
+        const AuthLoginRequestedEvent(email: 'e', password: 'p'),
       );
     });
   });
 
   group('AuthState', () {
     test('initial support value equality', () {
-      expect(const AuthState.initial(), const AuthState.initial());
+      expect(const AuthInitialState(), const AuthInitialState());
     });
 
     test('loading support value equality', () {
-      expect(const AuthState.loading(), const AuthState.loading());
+      expect(const AuthLoadingState(), const AuthLoadingState());
     });
 
     test('success support value equality', () {
       final user = UserEntity(id: 1, name: 'n', email: 'e');
       expect(
-        AuthState.success(user: user),
-        AuthState.success(user: user),
+        AuthSuccessState(user: user),
+        AuthSuccessState(user: user),
       );
     });
   });
 }
+// Force re-analysis

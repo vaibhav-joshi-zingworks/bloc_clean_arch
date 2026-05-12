@@ -19,23 +19,25 @@ class SplashView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       // Initialize the Bloc and trigger the 'started' event
-      create: (_) => sl<SplashBloc>()..add(const SplashEvent.started()),
+      create: (_) => sl<SplashBloc>()..add(const SplashEventStarted()),
       child: AppScaffold(
-        body: BlocConsumer<SplashBloc, SplashState>(builder: (context, state) {
-          // Render UI based on current state
-          return state.when(
-            initial: () => const SizedBox(),
-            loading: () => AppLoadingWidget(),
-            loaded: (_) => const SizedBox(), 
-            error: (message) => Center(
-              child: Text("Error: $message"),
-            ),
-          );
-        }, listener: (context, state) {
-          // React to states that trigger navigation
-          state.whenOrNull(
-            loaded: (status) {
-              switch (status) {
+        body: BlocConsumer<SplashBloc, SplashState>(
+          builder: (context, state) {
+            // Render UI based on current state
+            return switch (state) {
+              SplashInitialState() => const SizedBox(),
+              SplashLoadingState() => const AppLoadingWidget(),
+              SplashLoadedState() => const SizedBox(),
+              SplashErrorState(message: final msg) => Center(
+                  child: Text("Error: $msg"),
+                ),
+              _ => const SizedBox(),
+            };
+          },
+          listener: (context, state) {
+            // React to states that trigger navigation
+            if (state is SplashLoadedState) {
+              switch (state.status) {
                 case AppStatus.authenticated:
                   // TODO: Navigate to Home Screen
                   break;
@@ -48,14 +50,14 @@ class SplashView extends StatelessWidget {
                   Global.navigatorKey.currentContext!.pushNamed(RouteName.login);
                   break;
               }
-            },
-            error: (message) {
+            } else if (state is SplashErrorState) {
               // Handle initialization errors
-              debugPrint("Error: $message");
-            },
-          );
-        }),
+              debugPrint("Error: ${state.message}");
+            }
+          },
+        ),
       ),
     );
   }
 }
+// Force re-analysis

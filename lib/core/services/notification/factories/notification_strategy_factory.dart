@@ -14,9 +14,10 @@ class NotificationStrategyFactory {
     AwesomeNotificationsAdapter? adapter,
   }) {
     // Fallback to default implementations if specialized ones aren't provided
-    final NotificationRepository repo = repository ?? SharedPrefsNotificationRepository();
+    // final NotificationRepository repo = repository ?? SharedPrefsNotificationRepository();
+    final NotificationRepository? repo = repository;
 
-    final NotificationRateLimitStrategy rateLimiter = rateLimitStrategy ?? LocalNotificationRateLimitStrategy(repository: repo);
+    final NotificationRateLimitStrategy rateLimiter = rateLimitStrategy ?? LocalNotificationRateLimitStrategy(repository: repo!);
 
     final NotificationChannelRegistry registry = channelRegistry ?? DefaultNotificationChannelRegistry();
 

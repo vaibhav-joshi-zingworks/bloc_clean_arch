@@ -1,252 +1,204 @@
-œ# Bloc Clean Architecture (BCA) - Deep Documentation
+# 🌊 Bloc Clean Architecture (BCA) - Deep Documentation
 
-A high-performance, modular Flutter boilerplate built for production-grade applications. This architecture focuses on **Scalability**, **Testability**, and **Developer Productivity**.
-
----
-
-## 🏗 Architecture Deep Dive
-
-The project follows **Clean Architecture** principles, enforcing a strict unidirectional dependency flow: `Presentation → Domain ← Data`.
-
-### 1. The Domain Layer (Independent)
-The core business logic center. It has **zero dependencies** on Flutter or external libraries.
-- **Entities**: Pure Dart classes representing business objects.
-- **Use Cases**: Single-purpose classes (e.g., `LoginUseCase`) that orchestrate the flow of data.
-- **Repositories (Interfaces)**: Contract definitions that the Data layer must satisfy.
-- **Result Pattern**: Uses `dartz` `Either<AppException, Type>` to handle errors functionally, ensuring the UI always knows if a request succeeded or failed without using `try-catch` in Blocs.
-
-### 2. The Data Layer (Implementation)
-Responsible for fetching and transforming data.
-- **Data Sources**: Atomic units for API (Remote) or Cache (Local) access.
-- **Models**: DTOs (Data Transfer Objects) with `freezed` for `json_serializable` support.
-- **Mappers**: Pure functions that convert Models (Data layer) to Entities (Domain layer).
-- **Network Service**: A robust `Dio` implementation with a centralized `Failure` handler that maps `DioException` to domain-specific `AppException`.
-
-### 3. The Presentation Layer (UI)
-Handles user interaction and state.
-- **State Management**: `flutter_bloc` for predictable state transitions.
-- **Atomic Widgets**: UI is broken down into small, reusable components.
-- **Type-Safe Routing**: `go_router` for deep-linking and declarative navigation.
+> **A high-performance, modular Flutter boilerplate built for production-grade applications.**
+> This architecture focuses on **Scalability**, **Testability**, and **Developer Productivity**.
 
 ---
 
-## 🛠 Advanced Features
+## 🚀 Quick Start (Get Running in 2 Mins)
 
-### 🔌 Automated Dependency Injection
-We use `get_it` and `injectable`. Dependencies are registered via annotations:
-- `@injectable`: Factory instance.
-- `@lazySingleton`: Single instance created on first use.
-- `@preResolve`: For dependencies that need async initialization (e.g., `SharedPreferences`).
-- **DI Modules**: Centralized configuration in `core/di/injection.dart`.
+If you are new to the project, run these commands in order:
 
-### 🌐 Reactive Networking & Interceptors
-The `NetworkApiService` is wrapped with multiple interceptors:
-- **Connectivity**: Blocks requests immediately if there's no internet.
-- **Auth**: Automatically attaches Bearer tokens and handles 401 Session Expiry.
-- **Encryption**: Uses `AES` to encrypt/decrypt request payloads transparently.
-- **Logging**: `talker_dio_logger` for beautiful, searchable console logs.
+```bash
+# 1. Install dependencies
+make setup
+
+# 2. Generate all boilerplate code (DI, JSON, Freezed)
+make build
+
+# 3. Start the app
+flutter run
+```
+
+---
+
+## 🏗 Architecture Philosophy (The "Big Picture")
+
+We follow **Clean Architecture** to ensure that business logic is independent of the UI and external tools. The dependency flow is strictly **Unidirectional**: `Presentation → Domain ← Data`.
+
+### 🧩 1. The Domain Layer (The "Brain")
+*Pure Dart logic. No Flutter, No API knowledge.*
+- **Entities**: Simple classes representing your data (e.g., `User`).
+- **Use Cases**: One class = One action (e.g., `LoginUseCase`).
+- **Repositories (Interfaces)**: Contracts that define what the app can do.
+- **Error Handling**: Uses `dartz` `Either<AppException, T>`. No `try-catch` in the UI!
+
+### 📦 2. The Data Layer (The "Workforce")
+*How data is actually fetched and stored.*
+- **Data Sources**: The raw workers (Remote for APIs, Local for Cache).
+- **Models/DTOs**: JSON-specific classes (using `freezed`).
+- **Mappers**: Bridges that convert raw `Models` into clean `Entities`.
+- **Repository Impl**: The glue that decides whether to fetch from the web or the local cache.
+
+### 📱 3. The Presentation Layer (The "Face")
+*Everything the user sees.*
+- **State Management**: `flutter_bloc` (Events in, States out).
+- **Atomic Widgets**: Small, reusable UI pieces.
+- **Routing**: `go_router` for type-safe navigation.
+
+---
+
+# 🗺 The 5-Step Journey (Feature Development Guide)
+
+**Freshers start here!** To build any new feature (e.g., `Profile`), follow this exact sequence:
+
+### 1️⃣ Step 1: 🧩 Domain (Define the "What")
+- Create **Entity** in `domain/entities/`.
+- Create **Repository Interface** in `domain/repositories/`.
+- Create **Use Case** in `domain/usecases/`.
+
+### 2️⃣ Step 2: 📦 Data (Define the "How")
+- Create **Model/DTO** in `data/models/`.
+- Create **Data Source** (Remote/Local) in `data/datasources/`.
+- Create **Repository Implementation** in `data/repositories/`.
+- Create **Mapper** in `data/mappers/` (Model ➡️ Entity).
+
+### 3️⃣ Step 3: 🧠 Presentation (The Logic & UI)
+- Create **BLoC** (Event, State, Bloc) in `presentation/bloc/`.
+- Create **Screen** in `presentation/screens/`.
+- Create **Widgets** in `presentation/widgets/`.
+
+### 4️⃣ Step 4: 💉 Wiring (Dependency Injection)
+- Add `@injectable` to your DataSources, Repositories, and BLoCs.
+- Run `make build` to link everything together.
+
+### 5️⃣ Step 5: 🚦 Routing (Navigation)
+- Register your screen in `lib/app/router/app_router.dart`.
+
+---
+
+## 🔄 The Visual Flow (How Data Travels)
+
+```mermaid
+sequenceDiagram
+    participant UI as 📱 Screen (UI)
+    participant Bloc as 🧠 BLoC (Logic)
+    participant UC as 🧩 UseCase (Action)
+    participant Repo as 🏛 Repository (Manager)
+    participant RDS as 🌐 Remote Data (API)
+    participant LDS as 💾 Local Data (Storage)
+
+    Note over UI, LDS: User triggers an action
+    UI->>Bloc: Add Event (e.g. LoginClick)
+    Bloc->>UI: Emit LoadingState
+    Bloc->>UC: Execute call()
+    UC->>Repo: requestData()
+    Repo->>RDS: fetchFromNetwork()
+    RDS-->>Repo: returns DTO (JSON)
+    Repo->>LDS: saveLocally(token)
+    Repo-->>UC: returns Entity (via Mapper)
+    UC-->>Bloc: returns Result (Either)
+    Bloc->>UI: Emit SuccessState (with Entity)
+    UI->>UI: Navigate / Show Data
+```
+
+---
+
+## ⚙️ Core Infrastructure (For Experienced Devs)
+
+### 🔌 Dependency Injection (DI)
+We use `get_it` + `injectable`.
+- **Annotation-based**: Just add `@injectable` or `@lazySingleton`.
+- **Pre-resolve**: Used for async setups like `SharedPreferences`.
+
+### 🌐 Networking & Interceptors
+A robust `Dio` implementation with:
+- **Connectivity**: Auto-check for internet.
+- **Auth**: Auto-injects Bearer tokens and handles `401 Unauthorized`.
+- **Encryption**: Transparent `AES` encryption for all payloads.
+- **Logging**: Clean console logs using `talker_dio_logger`.
 
 ### 💾 Strategy-Based Storage
-A flexible storage system using the **Strategy Pattern**:
-- `StorageStrategy`: Interface for storage operations.
-- `SharedPrefsStrategy`: For non-sensitive settings.
-- `SecureStorageStrategy`: For tokens and sensitive user data.
-- `StorageFacade`: A unified entry point to swap strategies at runtime.
+We use the **Strategy Pattern** for local storage:
+- `SharedPrefsStrategy`: Fast, key-value storage.
+- `SecureStorageStrategy`: Encrypted storage for sensitive data (Tokens).
+- `StorageFacade`: Swappable at runtime.
 
 ### 🔒 Enterprise Security
-- **SSL Pinning**: Prevents Man-in-the-Middle attacks.
-- **Payload Encryption**: End-to-end encryption for API communication.
-- **Device Security**: Integrated checks for Root/Jailbreak and Emulator detection.
-- **Privacy**: `screen_protector` to disable screenshots on sensitive screens.
+- **SSL Pinning**: MitM protection.
+- **Jailbreak Detection**: Blocks rooted devices.
+- **Privacy Mode**: Disables screenshots on sensitive pages.
 
 ---
 
-## 🚀 Lifecycle & Bootstrap
-
-The app follows a controlled initialization sequence in `main.dart`:
-1. `WidgetsFlutterBinding.ensureInitialized()`
-2. `Firebase.initializeApp()`
-3. `initDependencies()`: Scans and registers all `@injectable` classes.
-4. `AppInitializerCubit`: Handles global startup logic (Auth check, Remote Config, Theme loading).
+## ⚠️ The Golden Rules
+> [!IMPORTANT]
+> 1. **Unidirectional Flow**: UI ➡️ BLoC ➡️ UseCase ➡️ Repository. **Never skip a step.**
+> 2. **Entities Only**: BLoC and UI should only ever see **Entities**. Never pass a **Model/DTO** to the UI.
+> 3. **No try-catch in BLoC**: Handle all errors in the Repository and map them to `AppException`.
+> 4. **Immutability**: All States and Events must extend `Equatable`.
 
 ---
 
-## 📝 Developer Productivity (Makefile)
+## 📂 Project Directory Structure
 
-Standardize your workflow with these optimized commands:
+```text
+lib/
+├── app/                # Global config, Router, Root View
+├── core/               # The "Engine": DI, Network, Services, Failure
+├── features/           # Self-contained business modules (Auth, Splash, etc.)
+│   └── <feature>/
+│       ├── data/       # Implementation details (DTOs, Repos, Sources)
+│       ├── domain/     # Business logic (Entities, UseCases)
+│       └── presentation/# UI components (Bloc, Screens, Widgets)
+├── resources/          # Design System: Themes, Colors, Icons
+└── utilities/          # Global helpers & extensions
+```
+
+---
+
+## 📝 Developer Toolbox (Makefile)
 
 | Command | Action |
 |---------|--------|
 | `make setup` | Fresh install of all dependencies |
-| `make build` | Generate files (`.freezed.dart`, `.g.dart`, `.config.dart`) |
-| `make watch` | Hot-reload for code generation |
-| `make prepare` | Auto-format, fix lints, and analyze code |
-| `make test` | Run all unit tests with coverage |
-| `make apk` | Build optimized, obfuscated release APK |
+| `make build` | Generate code (`.freezed.dart`, `.g.dart`, etc.) |
+| `make watch` | Live-reload code generation |
+| `make prepare` | Lint, Format, and Analyze code |
+| `make test` | Run all unit tests |
+| `make apk` | Build production-ready APK |
 
 ---
 
-## 📂 Project Structure & Module Graph
+## 🤝 Commit Message Conventions
+We follow [Conventional Commits](https://www.conventionalcommits.org/). Every commit message must follow this format:
 
-```text
-.
-├── android/                # Android native project files
-├── assets/                 # Static assets (images, fonts, animations)
-├── config/                 # Environment-specific JSON configs (dev.json, prod.json)
-├── ios/                    # iOS native project files
-├── lib/                    # Main source code
-│   ├── app/                # Global Application Layer
-│   │   ├── bootstrap/      # App initialization & startup Cubits
-│   │   ├── providers/      # App-wide BLoCs (Theme, Locale, Notifications)
-│   │   ├── router/         # GoRouter definitions & navigation logic
-│   │   └── view/           # Root App widget & global listeners
-│   ├── core/               # Shared Infrastructure Layer (The Engine)
-│   │   ├── di/             # Injection modules (GetIt + Injectable)
-│   │   ├── failure/        # Domain-specific Exceptions & Error Mapping
-│   │   ├── models/         # Base models (Result, PaginatedResult)
-│   │   ├── network/        # Dio client, Interceptors & UseCase base
-│   │   ├── services/       # External service wrappers (Analytics, Security, etc.)
-│   │   └── design/         # Responsive UI utilities & breakpoints
-│   ├── features/           # Feature-based Modules (Business Logic)
-│   │   └── <feature>/      # Individual feature (e.g., auth, settings)
-│   │       ├── data/       # Data Sources & Repository Implementations
-│   │       ├── domain/     # Entities, Use Cases & Repository Interfaces
-│   │       └── presentation/ # BLoCs, Pages & Feature-specific Widgets
-│   ├── gen/                # Auto-generated code (Assets, Env, L10n)
-│   ├── l10n/               # Localization source files (ARB)
-│   ├── resources/          # UI Foundation (Themes, Colors, Constants)
-│   ├── utilities/          # Global helper functions & extensions
-│   └── main.dart           # Application Entry Point
-├── test/                   # Comprehensive Test Suite
-├── Makefile                # Developer workflow automation
-└── pubspec.yaml            # Project dependencies & configuration
-```
+`type(scope): description`
+
+### 💡 Quick Keyword Summary
+| Type | Use Case | Example |
+|------|----------|---------|
+| `feat` | New feature/logic | `feat(splash): add first launch check` |
+| `fix` | Bug fix | `fix(auth): fix token refresh crash` |
+| `docs` | README/Comments | `docs: add setup instructions` |
+| `style` | Formatting/UI only | `style: fix login button padding` |
+| `refactor`| Code cleanup | `refactor: simplify storage strategy` |
+| `test` | Unit/Widget tests | `test: add auth_bloc tests` |
+| `chore` | Dependency/Build | `chore: update dio version` |
+
+### Why?
+1. **Automated Changelogs**: Easily generate release notes.
+2. **Readability**: Quickly understand what each change does.
+3. **Better History**: Makes it easy to search through Git logs.
 
 ---
 
-## 🧩 Module Breakdown
-
-### 📱 `lib/app/`
-The orchestrator of the application. It doesn't contain business logic but defines how the app starts and navigates.
-- **Bootstrap**: Handles the "splash to home" transition logic and pre-app-run checks.
-- **Router**: Centralized navigation. Uses `GoRouter` for deep-linking and type-safe routing.
-- **Providers**: Home for Cubits that must live for the entire app lifecycle (e.g., managing the current theme mode or user locale).
-
-### ⚙️ `lib/core/`
-The "Engine" of the project. It provides the building blocks for all features.
-- **DI (Dependency Injection)**: Uses `Injectable` to automatically generate the dependency graph, reducing boilerplate and manual instantiation.
-- **Network**: A highly resilient `Dio` wrapper. Includes interceptors for:
-  - `NetworkInterceptor`: Checks internet connectivity before sending requests.
-  - `AuthInterceptor`: Injects Bearer tokens and handles `401 Unauthorized` (Session Expiry).
-  - `PayloadInterceptor`: Handles transparent AES encryption/decryption of API data.
-- **Services**: Abstracted interfaces for platform features. If you want to change from `Firebase Analytics` to `Mixpanel`, you only change the implementation here.
-
-### 🚀 `lib/features/`
-Where the actual business value lives. Each folder is a self-contained "mini-app" following Clean Architecture:
-- **Domain Layer**: The "What". Defines business rules (Use Cases) and data shapes (Entities). It has no knowledge of APIs or DBs.
-- **Data Layer**: The "How". Implements the Domain's repository interfaces. It talks to `RemoteDataSource` (REST API) or `LocalDataSource` (Storage).
-- **Presentation Layer**: The "UI". Blocs convert user events into states, and Pages/Widgets render that state.
-
-### 🎨 `lib/resources/` & `lib/gen/`
-- **Resources**: Central truth for the design system. Contains `AppTheme`, `AppColors`, and shared UI constants.
-- **Gen**: You should rarely touch this. It contains code generated by `flutter_gen` (for type-safe assets) and `dart_define` (for environment variables).
-
-### 🧪 `test/`
-Mirroring the `lib` structure, it contains:
-- **Unit Tests**: For Use Cases and Repository implementations.
-- **Bloc Tests**: For state transition validation.
-- **Mocks**: Using `mocktail` to simulate dependencies.
-
-### 📂 Root Level Folders
-- **`config/`**: Holds environment-specific configuration. The `dev.json` or `prod.json` values are injected into the app at compile-time via `dart_define`.
-- **`assets/`**: Centralized storage for images, fonts, and other static files.
-- **`test/`**: Contains unit, widget, and integration tests. It follows the same directory structure as `lib/` for easy navigation.
-- **`Makefile`**: The project's command center. It automates complex commands into simple ones like `make setup` or `make build`.
+---
 
 ---
 
-## ✨ Feature Implementation Flow
-
-To add a feature (e.g., `Profile`):
-1. **Domain**: Create `UserEntity`, `IProfileRepository`, and `GetProfileUseCase`.
-2. **Data**: Create `UserModel` (with json), `ProfileRemoteDataSource`, and `ProfileRepositoryImpl`.
-3. **Presentation**: Create `ProfileBloc`, `ProfilePage`, and `ProfileWidget`.
-4. **DI**: Add `@injectable` to the repository implementation and data source.
-5. **Route**: Register the new page in `app_router.dart`.
-6. **Generate**: Run `make build`.
-
----
-
-## 🔐 Reference Feature: Authentication (`lib/features/auth/`)
-
-Use the `auth` module as the template for new features. It follows the same `data` / `domain` / `presentation` split as `settings` and `splash`, with plural folder names and a feature barrel at `lib/features/auth/xcore.dart` for imports outside the feature.
-
-### Module layout
-
-```text
-lib/features/auth/
-├── xcore.dart
-├── data/
-│   ├── datasources/   # Remote login + local session storage
-│   ├── dto/           # Login request/response payloads
-│   ├── mappers/       # DTO -> domain entity mapping
-│   ├── models/        # JSON models for API payloads
-│   └── repositories/  # AuthRepository implementation
-├── domain/
-│   ├── entities/      # UserEntity, AuthSessionEntity
-│   ├── repositories/  # AuthRepository contract
-│   └── usecases/      # Login, logout, session status
-└── presentation/
-    ├── bloc/          # AuthBloc, events, states
-    ├── screens/       # Route-level screens (LoginScreen)
-    └── widgets/       # Reusable auth UI (LoginForm)
-```
-
-`test/features/auth/` mirrors this layout for unit, repository, bloc, and widget tests.
-
-### End-to-end flow
-
-**Cold start and routing**
-
-1. `AppRouter` opens `SplashView` on the splash route.
-2. `SplashBloc` runs `GetAppStatusUseCase`, which reads local storage for first-launch and access-token state.
-3. If no valid session exists, navigation goes to `LoginScreen`. A stored token is treated as authenticated (home navigation is still a TODO in splash).
-
-**Login**
-
-1. `LoginForm` dispatches `AuthLoginRequested` to `AuthBloc`.
-2. `AuthBloc` calls `LoginUseCase` and maps the `Either<AppException, AuthSessionEntity>` result to loading, success, or failure states.
-3. `LoginUseCase` delegates to `AuthRepository.login`.
-4. `AuthRepositoryImpl` calls `AuthRemoteDataSource` (mocked today; `BaseApiService` is injected for a future real API), maps the response with `AuthSessionMapper`, and persists the session through `AuthLocalDataSource`.
-5. `LoginScreen` listens for `AuthSuccessState` or `AuthFailureState` (SnackBar feedback). A successful login writes tokens under `AuthStorageKeys`, which align with `Flags` used by `AuthInterceptor` and splash.
-
-**Logout and session checks**
-
-- `AuthLogoutRequested` runs `LogoutUseCase`, clears local session storage, and emits `AuthLoggedOutState`.
-- `GetAuthStatusUseCase` exposes `AuthRepository.hasActiveSession` for startup or guard logic without duplicating storage reads in the UI.
-
-```mermaid
-flowchart TD
-  A[App start] --> B[SplashView / SplashBloc]
-  B --> C{Stored access token?}
-  C -->|No| D[LoginScreen]
-  C -->|Yes| E[Authenticated route TODO]
-  D --> F[LoginForm -> AuthLoginRequested]
-  F --> G[AuthBloc]
-  G --> H[LoginUseCase]
-  H --> I[AuthRepositoryImpl]
-  I --> J[AuthRemoteDataSource]
-  I --> K[AuthLocalDataSource]
-  J --> L[LoginResponseDto]
-  L --> M[AuthSessionMapper -> AuthSessionEntity]
-  M --> K
-  K --> N[AuthSuccessState]
-  K --> O[AuthInterceptor on later API calls]
-```
-
-### Conventions to copy
-
-- Keep domain types free of Flutter and JSON; map in `data/mappers`.
-- Name use cases `*_use_case.dart` and repository folders `repositories/`.
-- Register data sources, repository, and use cases in `core/di/injection.dart`; annotate blocs with `@injectable`.
-- Provide `xcore.dart` when other modules need a stable public import surface.
+## 🔐 Reference Feature: Auth (`lib/features/auth/`)
+*Always look at the Auth feature if you are confused. It is the gold standard for this project.*
+- Uses `AuthRemoteDataSource` for API calls.
+- Uses `AuthLocalDataSource` for token persistence.
+- Maps `LoginResponseDto` to `AuthSessionEntity` via `AuthSessionMapper`.

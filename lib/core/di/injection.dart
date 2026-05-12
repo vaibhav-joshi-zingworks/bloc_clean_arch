@@ -1,5 +1,4 @@
 import 'package:bloc_clean_arch/core/services/app_device_info/infrastructure/services/brightness_provider.dart';
-import 'package:bloc_clean_arch/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 
@@ -7,10 +6,14 @@ import '/core.dart';
 import '../../app/providers/global_message.dart';
 import '../../app/providers/locale_bloc.dart';
 import '../../app/router/app_router.dart';
+import '../../features/auth/data/datasources/auth_local_data_source.dart';
 import '../../features/auth/data/datasources/auth_remote_data_source.dart';
-import '../../features/auth/data/repository/auth_repository_impl.dart';
-import '../../features/auth/domain/repository/auth_repository.dart';
-import '../../features/auth/domain/usecases/login_usecase.dart';
+import '../../features/auth/data/datasources/auth_remote_data_source_impl.dart';
+import '../../features/auth/data/repositories/auth_repository_impl.dart';
+import '../../features/auth/domain/repositories/auth_repository.dart';
+import '../../features/auth/domain/usecases/get_auth_status_use_case.dart';
+import '../../features/auth/domain/usecases/login_use_case.dart';
+import '../../features/auth/domain/usecases/logout_use_case.dart';
 import '../../features/settings/xcore.dart';
 import '../../features/splash/data/datasource/splash_local_data_source.dart';
 import '../../features/splash/data/repositories/splash_repository_impl.dart';
@@ -320,19 +323,33 @@ abstract class InjectionModule {
       GetAppStatusUseCase(repository);
 
   // Authentication
-  @injectable
-  AuthBloc authBloc(LoginUseCase loginUseCase) =>
-      AuthBloc(loginUseCase: loginUseCase);
-
   @lazySingleton
-  LoginUseCase loginUseCase(AuthRepository repository) =>
-      LoginUseCase(repository: repository);
-
-  @lazySingleton
-  AuthRepository authRepository(AuthRemoteDataSource remote) =>
-      AuthRepositoryImpl(remoteDataSource: remote);
+  AuthLocalDataSource authLocalDataSource(StorageFacade storage) =>
+      AuthLocalDataSource(storage);
 
   @lazySingleton
   AuthRemoteDataSource authRemoteDataSource(BaseApiService api) =>
-      AuthRemoteDataSourceImpl();
+      AuthRemoteDataSourceImpl(api);
+
+  @lazySingleton
+  AuthRepository authRepository(
+    AuthRemoteDataSource remote,
+    AuthLocalDataSource local,
+  ) =>
+      AuthRepositoryImpl(
+        remoteDataSource: remote,
+        localDataSource: local,
+      );
+
+  @lazySingleton
+  LoginUseCase loginUseCase(AuthRepository repository) =>
+      LoginUseCase(repository);
+
+  @lazySingleton
+  LogoutUseCase logoutUseCase(AuthRepository repository) =>
+      LogoutUseCase(repository);
+
+  @lazySingleton
+  GetAuthStatusUseCase getAuthStatusUseCase(AuthRepository repository) =>
+      GetAuthStatusUseCase(repository);
 }

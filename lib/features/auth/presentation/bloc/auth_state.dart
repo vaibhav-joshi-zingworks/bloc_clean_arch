@@ -1,7 +1,7 @@
 import '../../../../core.dart';
-import '../../domain/entity/user_entity.dart';
+import '../../domain/entities/auth_session_entity.dart';
 
-/// States emitted by the [AuthBloc] during the authentication process.
+/// States emitted by [AuthBloc].
 abstract class AuthState extends Equatable {
   const AuthState();
 
@@ -9,27 +9,23 @@ abstract class AuthState extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Initial state before any login attempt.
 class AuthInitialState extends AuthState {
   const AuthInitialState();
 }
 
-/// State indicating that a login request is currently being processed.
 class AuthLoadingState extends AuthState {
   const AuthLoadingState();
 }
 
-/// State indicating that the login was successful, containing the [user] data.
 class AuthSuccessState extends AuthState {
-  final UserEntity user;
+  final AuthSessionEntity session;
 
-  const AuthSuccessState({required this.user});
+  const AuthSuccessState({required this.session});
 
   @override
-  List<Object?> get props => [user];
+  List<Object?> get props => [session];
 }
 
-/// State indicating that the login attempt failed, containing the [appException].
 class AuthFailureState extends AuthState {
   final AppException appException;
 
@@ -37,4 +33,8 @@ class AuthFailureState extends AuthState {
 
   @override
   List<Object?> get props => [appException];
+}
+
+class AuthLoggedOutState extends AuthState {
+  const AuthLoggedOutState();
 }

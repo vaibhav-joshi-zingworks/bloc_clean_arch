@@ -1,15 +1,10 @@
 import 'package:bloc_clean_arch/features/auth/data/models/user_model.dart';
-import 'package:bloc_clean_arch/features/auth/domain/entity/user_entity.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   final tUserModel = UserModel(id: 1, name: 'Test', email: 'test@test.com');
 
   group('UserModel', () {
-    test('should be a subclass of UserEntity', () {
-      expect(tUserModel, isA<UserEntity>());
-    });
-
     test('fromJson should return a valid model', () {
       final json = {
         'id': 1,

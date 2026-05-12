@@ -1,14 +1,13 @@
-import 'package:bloc_clean_arch/features/auth/domain/entity/user_entity.dart';
+/// Data Transfer Object (DTO) for user payloads returned by the auth API.
+class UserModel {
+  final int id;
+  final String name;
+  final String email;
 
-/// Data Transfer Object (DTO) for the User entity.
-/// 
-/// Extends [UserEntity] and adds JSON serialization logic 
-/// specific to the data layer.
-class UserModel extends UserEntity {
-  UserModel({
-    required super.id,
-    required super.name,
-    required super.email,
+  const UserModel({
+    required this.id,
+    required this.name,
+    required this.email,
   });
 
   /// Creates a [UserModel] from a JSON map.

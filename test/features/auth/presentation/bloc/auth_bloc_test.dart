@@ -1,6 +1,8 @@
 import 'package:bloc_clean_arch/core.dart';
-import 'package:bloc_clean_arch/features/auth/domain/entity/user_entity.dart';
-import 'package:bloc_clean_arch/features/auth/domain/usecases/login_usecase.dart';
+import 'package:bloc_clean_arch/features/auth/domain/entities/auth_session_entity.dart';
+import 'package:bloc_clean_arch/features/auth/domain/entities/user_entity.dart';
+import 'package:bloc_clean_arch/features/auth/domain/usecases/login_use_case.dart';
+import 'package:bloc_clean_arch/features/auth/domain/usecases/logout_use_case.dart';
 import 'package:bloc_clean_arch/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:bloc_clean_arch/features/auth/presentation/bloc/auth_event.dart';
 import 'package:bloc_clean_arch/features/auth/presentation/bloc/auth_state.dart';
@@ -10,26 +12,34 @@ import 'package:mocktail/mocktail.dart';
 
 class MockLoginUseCase extends Mock implements LoginUseCase {}
 
+class MockLogoutUseCase extends Mock implements LogoutUseCase {}
+
 void main() {
   late AuthBloc authBloc;
   late MockLoginUseCase mockLoginUseCase;
+  late MockLogoutUseCase mockLogoutUseCase;
 
   setUp(() {
     mockLoginUseCase = MockLoginUseCase();
-    authBloc = AuthBloc(loginUseCase: mockLoginUseCase);
+    mockLogoutUseCase = MockLogoutUseCase();
+    authBloc = AuthBloc(mockLoginUseCase, mockLogoutUseCase);
   });
 
   tearDown(() {
     authBloc.close();
   });
 
-  final tUser = UserEntity(
-    id: 1,
-    name: 'Test User',
-    email: 'test@example.com',
+  const tSession = AuthSessionEntity(
+    user: UserEntity(
+      id: 1,
+      name: 'Test User',
+      email: 'test@example.com',
+    ),
+    accessToken: 'access-token',
+    refreshToken: 'refresh-token',
   );
 
-  final tLoginParams = LoginParams(
+  const tLoginParams = LoginParams(
     email: 'test@example.com',
     password: 'password123',
   );
@@ -43,16 +53,16 @@ void main() {
       'emits [AuthLoadingState, AuthSuccessState] when login is successful',
       build: () {
         when(() => mockLoginUseCase(any()))
-            .thenAnswer((_) async => Right(tUser));
+            .thenAnswer((_) async => const Right(tSession));
         return authBloc;
       },
-      act: (bloc) => bloc.add(const AuthLoginRequestedEvent(
+      act: (bloc) => bloc.add(const AuthLoginRequested(
         email: 'test@example.com',
         password: 'password123',
       )),
       expect: () => [
         const AuthLoadingState(),
-        AuthSuccessState(user: tUser),
+        const AuthSuccessState(session: tSession),
       ],
       verify: (_) {
         verify(() => mockLoginUseCase(any())).called(1);
@@ -66,7 +76,7 @@ void main() {
             .thenAnswer((_) async => Left(UnauthorizedError()));
         return authBloc;
       },
-      act: (bloc) => bloc.add(const AuthLoginRequestedEvent(
+      act: (bloc) => bloc.add(const AuthLoginRequested(
         email: 'test@example.com',
         password: 'password123',
       )),
@@ -86,7 +96,7 @@ void main() {
         when(() => mockLoginUseCase(any())).thenThrow(Exception());
         return authBloc;
       },
-      act: (bloc) => bloc.add(const AuthLoginRequestedEvent(
+      act: (bloc) => bloc.add(const AuthLoginRequested(
         email: 'test@example.com',
         password: 'password123',
       )),
@@ -103,21 +113,20 @@ void main() {
     blocTest<AuthBloc, AuthState>(
       'does not emit new states when login is already in progress',
       build: () {
-        // Slow response to keep it in progress
         when(() => mockLoginUseCase(any())).thenAnswer(
           (_) async => Future.delayed(
             const Duration(milliseconds: 100),
-            () => Right(tUser),
+            () => const Right(tSession),
           ),
         );
         return authBloc;
       },
       act: (bloc) async {
-        bloc.add(const AuthLoginRequestedEvent(
+        bloc.add(const AuthLoginRequested(
           email: 'test@example.com',
           password: 'password123',
         ));
-        bloc.add(const AuthLoginRequestedEvent(
+        bloc.add(const AuthLoginRequested(
           email: 'test2@example.com',
           password: 'password456',
         ));
@@ -125,20 +134,20 @@ void main() {
       wait: const Duration(milliseconds: 200),
       expect: () => [
         const AuthLoadingState(),
-        AuthSuccessState(user: tUser),
+        const AuthSuccessState(session: tSession),
       ],
       verify: (_) {
         verify(() => mockLoginUseCase(any())).called(1);
       },
     );
-    
+
     blocTest<AuthBloc, AuthState>(
       'emits [AuthLoadingState, AuthFailureState] with TimeoutError when LoginUseCase throws TimeoutError',
       build: () {
         when(() => mockLoginUseCase(any())).thenThrow(TimeoutError());
         return authBloc;
       },
-      act: (bloc) => bloc.add(const AuthLoginRequestedEvent(
+      act: (bloc) => bloc.add(const AuthLoginRequested(
         email: 'test@example.com',
         password: 'password123',
       )),
@@ -152,9 +161,9 @@ void main() {
       ],
     );
   });
-  
-  // Register fallback value for LoginParams if needed by mocktail
+
   setUpAll(() {
     registerFallbackValue(tLoginParams);
+    registerFallbackValue(NoParams());
   });
 }

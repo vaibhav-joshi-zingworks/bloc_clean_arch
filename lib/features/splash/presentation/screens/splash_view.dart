@@ -19,9 +19,9 @@ class SplashView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       // Initialize the Bloc and trigger the 'started' event
-      create: (_) => sl<SplashBloc>()..add(const SplashEventStarted()),
+      create: (_) => sl<SplashBloc>()..add(const SplashEventStarted()), /// It is Creating the Splash bloc in this line.
       child: AppScaffold(
-        body: BlocConsumer<SplashBloc, SplashState>(
+        body: BlocConsumer<SplashBloc, SplashState>( /// It is creating splash consumer and use that created splash bloc in this.
           builder: (context, state) {
             // Render UI based on current state
             return switch (state) {

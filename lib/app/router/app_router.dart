@@ -1,6 +1,6 @@
 import 'package:bloc_clean_arch/app/router/route_name.dart';
 import 'package:bloc_clean_arch/app/router/router_extension.dart';
-import 'package:bloc_clean_arch/features/auth/presentation/pages/login_page.dart';
+import 'package:bloc_clean_arch/features/auth/presentation/screens/login_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -37,7 +37,7 @@ class AppRouter {
           path: RouteName.login.path,
           builder: (_, __) => BlocProvider(
             create: (_) => sl<AuthBloc>(),
-            child: const LoginPage(),
+            child: const LoginScreen(),
           ),
         ),
 

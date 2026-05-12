@@ -17,10 +17,15 @@ import '../../app/bootstrap/app_initializer_bloc.dart' as _i852;
 import '../../app/providers/global_message.dart' as _i756;
 import '../../app/providers/locale_bloc.dart' as _i939;
 import '../../core.dart' as _i943;
+import '../../features/auth/data/datasources/auth_local_data_source.dart'
+    as _i852;
 import '../../features/auth/data/datasources/auth_remote_data_source.dart'
     as _i107;
-import '../../features/auth/domain/repository/auth_repository.dart' as _i961;
-import '../../features/auth/domain/usecases/login_usecase.dart' as _i188;
+import '../../features/auth/domain/repositories/auth_repository.dart' as _i787;
+import '../../features/auth/domain/usecases/get_auth_status_use_case.dart'
+    as _i796;
+import '../../features/auth/domain/usecases/login_use_case.dart' as _i37;
+import '../../features/auth/domain/usecases/logout_use_case.dart' as _i711;
 import '../../features/auth/presentation/bloc/auth_bloc.dart' as _i797;
 import '../../features/settings/xcore.dart' as _i691;
 import '../../features/splash/data/datasource/splash_local_data_source.dart'
@@ -102,6 +107,8 @@ extension GetItInjectableX on _i174.GetIt {
         () => injectionModule.themeLocalDataSource(gh<_i943.StorageFacade>()));
     gh.lazySingleton<_i552.SplashLocalDataSource>(
         () => injectionModule.splashLocalDataSource(gh<_i943.StorageFacade>()));
+    gh.lazySingleton<_i852.AuthLocalDataSource>(
+        () => injectionModule.authLocalDataSource(gh<_i943.StorageFacade>()));
     gh.lazySingleton<_i943.StorageFacade>(
       () => injectionModule
           .secureStorageFacade(gh<_i943.SecureStorageStrategy>()),
@@ -172,12 +179,20 @@ extension GetItInjectableX on _i174.GetIt {
         () => injectionModule.baseApiService(gh<_i943.Dio>()));
     gh.lazySingleton<_i107.AuthRemoteDataSource>(
         () => injectionModule.authRemoteDataSource(gh<_i943.BaseApiService>()));
-    gh.lazySingleton<_i961.AuthRepository>(
-        () => injectionModule.authRepository(gh<_i107.AuthRemoteDataSource>()));
-    gh.lazySingleton<_i188.LoginUseCase>(
-        () => injectionModule.loginUseCase(gh<_i961.AuthRepository>()));
-    gh.factory<_i797.AuthBloc>(
-        () => injectionModule.authBloc(gh<_i188.LoginUseCase>()));
+    gh.lazySingleton<_i787.AuthRepository>(() => injectionModule.authRepository(
+          gh<_i107.AuthRemoteDataSource>(),
+          gh<_i852.AuthLocalDataSource>(),
+        ));
+    gh.lazySingleton<_i37.LoginUseCase>(
+        () => injectionModule.loginUseCase(gh<_i787.AuthRepository>()));
+    gh.lazySingleton<_i711.LogoutUseCase>(
+        () => injectionModule.logoutUseCase(gh<_i787.AuthRepository>()));
+    gh.lazySingleton<_i796.GetAuthStatusUseCase>(
+        () => injectionModule.getAuthStatusUseCase(gh<_i787.AuthRepository>()));
+    gh.factory<_i797.AuthBloc>(() => _i797.AuthBloc(
+          gh<_i37.LoginUseCase>(),
+          gh<_i711.LogoutUseCase>(),
+        ));
     return this;
   }
 }

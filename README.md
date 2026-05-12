@@ -1,4 +1,4 @@
-# Bloc Clean Architecture (BCA) - Deep Documentation
+œ# Bloc Clean Architecture (BCA) - Deep Documentation
 
 A high-performance, modular Flutter boilerplate built for production-grade applications. This architecture focuses on **Scalability**, **Testability**, and **Developer Productivity**.
 
@@ -174,3 +174,79 @@ To add a feature (e.g., `Profile`):
 4. **DI**: Add `@injectable` to the repository implementation and data source.
 5. **Route**: Register the new page in `app_router.dart`.
 6. **Generate**: Run `make build`.
+
+---
+
+## 🔐 Reference Feature: Authentication (`lib/features/auth/`)
+
+Use the `auth` module as the template for new features. It follows the same `data` / `domain` / `presentation` split as `settings` and `splash`, with plural folder names and a feature barrel at `lib/features/auth/xcore.dart` for imports outside the feature.
+
+### Module layout
+
+```text
+lib/features/auth/
+├── xcore.dart
+├── data/
+│   ├── datasources/   # Remote login + local session storage
+│   ├── dto/           # Login request/response payloads
+│   ├── mappers/       # DTO -> domain entity mapping
+│   ├── models/        # JSON models for API payloads
+│   └── repositories/  # AuthRepository implementation
+├── domain/
+│   ├── entities/      # UserEntity, AuthSessionEntity
+│   ├── repositories/  # AuthRepository contract
+│   └── usecases/      # Login, logout, session status
+└── presentation/
+    ├── bloc/          # AuthBloc, events, states
+    ├── screens/       # Route-level screens (LoginScreen)
+    └── widgets/       # Reusable auth UI (LoginForm)
+```
+
+`test/features/auth/` mirrors this layout for unit, repository, bloc, and widget tests.
+
+### End-to-end flow
+
+**Cold start and routing**
+
+1. `AppRouter` opens `SplashView` on the splash route.
+2. `SplashBloc` runs `GetAppStatusUseCase`, which reads local storage for first-launch and access-token state.
+3. If no valid session exists, navigation goes to `LoginScreen`. A stored token is treated as authenticated (home navigation is still a TODO in splash).
+
+**Login**
+
+1. `LoginForm` dispatches `AuthLoginRequested` to `AuthBloc`.
+2. `AuthBloc` calls `LoginUseCase` and maps the `Either<AppException, AuthSessionEntity>` result to loading, success, or failure states.
+3. `LoginUseCase` delegates to `AuthRepository.login`.
+4. `AuthRepositoryImpl` calls `AuthRemoteDataSource` (mocked today; `BaseApiService` is injected for a future real API), maps the response with `AuthSessionMapper`, and persists the session through `AuthLocalDataSource`.
+5. `LoginScreen` listens for `AuthSuccessState` or `AuthFailureState` (SnackBar feedback). A successful login writes tokens under `AuthStorageKeys`, which align with `Flags` used by `AuthInterceptor` and splash.
+
+**Logout and session checks**
+
+- `AuthLogoutRequested` runs `LogoutUseCase`, clears local session storage, and emits `AuthLoggedOutState`.
+- `GetAuthStatusUseCase` exposes `AuthRepository.hasActiveSession` for startup or guard logic without duplicating storage reads in the UI.
+
+```mermaid
+flowchart TD
+  A[App start] --> B[SplashView / SplashBloc]
+  B --> C{Stored access token?}
+  C -->|No| D[LoginScreen]
+  C -->|Yes| E[Authenticated route TODO]
+  D --> F[LoginForm -> AuthLoginRequested]
+  F --> G[AuthBloc]
+  G --> H[LoginUseCase]
+  H --> I[AuthRepositoryImpl]
+  I --> J[AuthRemoteDataSource]
+  I --> K[AuthLocalDataSource]
+  J --> L[LoginResponseDto]
+  L --> M[AuthSessionMapper -> AuthSessionEntity]
+  M --> K
+  K --> N[AuthSuccessState]
+  K --> O[AuthInterceptor on later API calls]
+```
+
+### Conventions to copy
+
+- Keep domain types free of Flutter and JSON; map in `data/mappers`.
+- Name use cases `*_use_case.dart` and repository folders `repositories/`.
+- Register data sources, repository, and use cases in `core/di/injection.dart`; annotate blocs with `@injectable`.
+- Provide `xcore.dart` when other modules need a stable public import surface.

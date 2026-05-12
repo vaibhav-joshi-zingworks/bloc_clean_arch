@@ -1,41 +1,41 @@
 import 'dart:async';
 
-import 'package:bloc_clean_arch/features/auth/domain/usecases/login_usecase.dart';
+import 'package:bloc_clean_arch/features/auth/domain/usecases/login_use_case.dart';
+import 'package:bloc_clean_arch/features/auth/domain/usecases/logout_use_case.dart';
 import 'package:bloc_clean_arch/features/auth/presentation/bloc/auth_event.dart';
 import 'package:bloc_clean_arch/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../../../core.dart';
 import '../../../../core/failure/app_exception.dart';
 
-/// Business Logic Component (BLoC) for authentication.
-/// 
-/// Manages the state transitions for the login process and 
-/// communicates with the domain layer.
+/// Manages authentication state for the login flow.
+@injectable
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final LoginUseCase loginUseCase;
-
-  /// Internal flag to prevent redundant concurrent login attempts.
-  bool _isLoginInProgress = false;
-
-  AuthBloc({required this.loginUseCase}) : super(const AuthInitialState()) {
-    on<AuthLoginRequestedEvent>(_onLoginRequested);
+  AuthBloc(
+    this._loginUseCase,
+    this._logoutUseCase,
+  ) : super(const AuthInitialState()) {
+    on<AuthLoginRequested>(_onLoginRequested);
+    on<AuthLogoutRequested>(_onLogoutRequested);
   }
 
-  /// Handles the login request event.
+  final LoginUseCase _loginUseCase;
+  final LogoutUseCase _logoutUseCase;
+  bool _isLoginInProgress = false;
+
   Future<void> _onLoginRequested(
-      AuthLoginRequestedEvent event,
-      Emitter<AuthState> emit,
-      ) async {
+    AuthLoginRequested event,
+    Emitter<AuthState> emit,
+  ) async {
     if (_isLoginInProgress) return;
 
     _isLoginInProgress = true;
-
     emit(const AuthLoadingState());
 
     try {
-      // Execute the login use case
-      final result = await loginUseCase(
+      final result = await _loginUseCase(
         LoginParams(
           email: event.email,
           password: event.password,
@@ -45,26 +45,30 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         onTimeout: () => throw TimeoutError(),
       );
 
-      // Handle the result functionally using Either
       result.fold(
-            (failure) {
-          // failure is already AppException → pass directly to UI state
-          emit(AuthFailureState(appException: failure));
-        },
-            (user) {
-          emit(AuthSuccessState(user: user));
-        },
+        (failure) => emit(AuthFailureState(appException: failure)),
+        (session) => emit(AuthSuccessState(session: session)),
       );
-    }
-    on AppException catch (e) {
-      emit(AuthFailureState(appException: e));
-    }
-    catch (e) {
+    } on AppException catch (error) {
+      emit(AuthFailureState(appException: error));
+    } catch (_) {
       emit(AuthFailureState(appException: UnknownError()));
-    }
-    finally {
+    } finally {
       _isLoginInProgress = false;
     }
   }
+
+  Future<void> _onLogoutRequested(
+    AuthLogoutRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthLoadingState());
+
+    final result = await _logoutUseCase(NoParams());
+
+    result.fold(
+      (failure) => emit(AuthFailureState(appException: failure)),
+      (_) => emit(const AuthLoggedOutState()),
+    );
+  }
 }
-// Force re-analysis

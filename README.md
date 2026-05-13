@@ -3,6 +3,8 @@
 > **A high-performance, modular Flutter boilerplate built for production-grade applications.**
 > This architecture focuses on **Scalability**, **Testability**, and **Developer Productivity**.
 
+Full project documentation: [docs/PROJECT_DOCUMENTATION.md](docs/PROJECT_DOCUMENTATION.md). Slide deck: [docs/Bloc_Clean_Architecture_Overview.pptx](docs/Bloc_Clean_Architecture_Overview.pptx) (regenerate with `python3 scripts/generate_project_ppt.py`).
+
 ---
 
 ## 🚀 Quick Start (Get Running in 2 Mins)
